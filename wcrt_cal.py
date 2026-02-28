@@ -781,6 +781,19 @@ def choose_job_new(job_list):
                                         choose_list.append(job)
         return choose_list
 
+def _mark_job_release(job, release_time):
+        """为作业实例补充释放时刻和DAG前置约束信息。"""
+        job.release_time = release_time
+        job.predecessors = set(getattr(job, 'predecessors', set()))
+        return job
+
+def _dag_job_runnable(job, current_time, completed_jobs):
+        """DAG约束：前置任务未完成时，当前任务不能执行。"""
+        return job.release_time <= current_time and job.predecessors.issubset(completed_jobs)
+
+def _get_runnable_jobs(job_list, current_time, completed_jobs):
+        return [job for job in job_list if _dag_job_runnable(job, current_time, completed_jobs)]
+
 def new_wcrt_5(task_set, T, tasks):#为作业同时执行加入额外条件
         hp = tasks - set([T])
         hpH = tasks.intersection(task_set.HI) - set([T])
@@ -1062,9 +1075,56 @@ def amc_rtb_wcrt(task_set, T, tasks):
         hpH = tasks.intersection(task_set.HI) - set([T])
         hpL = tasks.intersection(task_set.LO) - task_set.HI - set([T])
 
-        rLO = T.eLO + sum([Tp.eLO for Tp in hp])
+        rLO = T.eLO
         while rLO <= T.dLO:
-                R = T.eLO + sum([ceil(float(rLO) / Tp.pLO) * Tp.eLO for Tp in hp])
+                current_time = 0
+                current_job = _mark_job_release(copy.deepcopy(T), 0)
+                job_list = [_mark_job_release(copy.deepcopy(task), 0) for task in hp]
+                completed_jobs = set()
+
+                while current_job.eLO != 0:
+                        if current_time != 0:
+                                for task in hp:
+                                        if (current_time % task.pLO == 0) and current_time <= rLO:
+                                                job_list.append(_mark_job_release(copy.deepcopy(task), current_time))
+
+                        last_exe_time = unit_time
+                        while last_exe_time > 0:
+                                runnable_jobs = _get_runnable_jobs(job_list, current_time, completed_jobs)
+                                if len(runnable_jobs) != 0:
+                                        choose_list = choose_job_new(runnable_jobs)
+                                        exe_time = get_min_exe_LO(choose_list)
+                                        if exe_time >= last_exe_time:
+                                                for job in choose_list:
+                                                        if job.eLO > last_exe_time:
+                                                                job.eLO -= last_exe_time
+                                                        else:
+                                                                completed_jobs.add(job.id)
+                                                                job_list.remove(job)
+                                                last_exe_time = 0
+                                        else:
+                                                for job in choose_list:
+                                                        if job.eLO > exe_time:
+                                                                job.eLO -= exe_time
+                                                        else:
+                                                                completed_jobs.add(job.id)
+                                                                job_list.remove(job)
+                                                last_exe_time -= exe_time
+
+                                if len(_get_runnable_jobs(job_list, current_time, completed_jobs)) == 0:
+                                        if _dag_job_runnable(current_job, current_time, completed_jobs):
+                                                if current_job.eLO >= last_exe_time:
+                                                        current_job.eLO -= last_exe_time
+                                                        last_exe_time = 0
+                                                else:
+                                                        last_exe_time -= current_job.eLO
+                                                        current_job.eLO = 0
+                                                        current_time -= last_exe_time
+                                                        break
+                                        else:
+                                                last_exe_time = 0
+                        current_time += unit_time
+                R = current_time
                 if R == rLO:
                     break
                 if R > T.dLO:
@@ -1076,9 +1136,70 @@ def amc_rtb_wcrt(task_set, T, tasks):
                 T.resp = rLO
                 return rLO
 
-        rHI = T.eHI + sum([Tp.eHI for Tp in hpH]) + sum([Tp.eLO for Tp in hpL])
+        rHI = T.eHI
         while rHI <= T.dHI:
-                R = (T.eHI + sum([ceil(float(rHI) / Tp.pHI) * Tp.eHI for Tp in hpH]) + sum([ceil(float(rLO) / Tp.pLO) * Tp.eLO for Tp in hpL]))
+                current_time = 0
+                current_job = _mark_job_release(copy.deepcopy(T), 0)
+                job_list = [_mark_job_release(copy.deepcopy(task), 0) for task in hp]
+                completed_jobs = set()
+                while current_job.eHI != 0:
+                        if current_time !=0:
+                                for task in hpL:
+                                        if (current_time % task.pLO == 0) and current_time <= rLO:
+                                                job_list.append(_mark_job_release(copy.deepcopy(task), current_time))
+                                for task in hpH:
+                                        if (current_time % task.pHI == 0) and current_time <= rHI:
+                                                job_list.append(_mark_job_release(copy.deepcopy(task), current_time))
+                        last_exe_time = unit_time
+                        while last_exe_time > 0:
+                                runnable_jobs = _get_runnable_jobs(job_list, current_time, completed_jobs)
+                                if len(runnable_jobs) != 0:
+                                        choose_list = choose_job_new(runnable_jobs)
+                                        exe_time = get_min_exe_HI(choose_list)
+                                        if exe_time >= last_exe_time:
+                                                for job in choose_list:
+                                                        if job.cri:
+                                                                if job.eLO > last_exe_time:
+                                                                        job.eLO -= last_exe_time
+                                                                else:
+                                                                        completed_jobs.add(job.id)
+                                                                        job_list.remove(job)
+                                                        else:
+                                                                if job.eHI > last_exe_time:
+                                                                        job.eHI -= last_exe_time
+                                                                else:
+                                                                        completed_jobs.add(job.id)
+                                                                        job_list.remove(job)
+                                                last_exe_time = 0
+                                        else:
+                                                for job in choose_list:
+                                                        if job.cri:
+                                                                if job.eLO > exe_time:
+                                                                        job.eLO -= exe_time
+                                                                else:
+                                                                        completed_jobs.add(job.id)
+                                                                        job_list.remove(job)
+                                                        else:
+                                                                if job.eHI > exe_time:
+                                                                        job.eHI -= exe_time
+                                                                else:
+                                                                        completed_jobs.add(job.id)
+                                                                        job_list.remove(job)
+                                                last_exe_time -= exe_time
+                                if len(_get_runnable_jobs(job_list, current_time, completed_jobs)) == 0:
+                                        if _dag_job_runnable(current_job, current_time, completed_jobs):
+                                                if current_job.eHI >= last_exe_time:
+                                                        current_job.eHI -= last_exe_time
+                                                        last_exe_time = 0
+                                                else:
+                                                        last_exe_time -= current_job.eHI
+                                                        current_job.eHI = 0
+                                                        current_time -= last_exe_time
+                                                        break
+                                        else:
+                                                last_exe_time = 0
+                        current_time += unit_time
+                R = current_time
                 if R == rHI:
                     break
                 if R > T.dHI:
