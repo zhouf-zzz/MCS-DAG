@@ -394,63 +394,6 @@ def WF_DP(ts, wcrt_algor = amc_rtb_wcrt): #WF
                 break
     return WF_DP_mapping_list
 
-def WF_DP_new(ts, wcrt_algor = amc_rtb_wcrt): #error
-    task_set = ts.HI.union(ts.LO)
-    WF_DP_mapping_list = [list() for _ in range(node_number)] #映射列表
-    core_uti_list_LO = [0 for _ in range(node_number)] #已映射任务低关键度模式利用率分布
-    core_uti_list_HI = [0 for _ in range(node_number)] #已映射任务高关键度模式利用率分布
-    tasks_DP = sorted(task_set, key=lambda task:task.pri, reverse = True)
-    for task in tasks_DP:
-        place_max_uti_dict = {}
-        for start_row in range(0, cluster_row - task.width + 1): #遍历所有映射情况
-            for start_col in range(0, cluster_col - task.length + 1):
-                core_max_uti = 0 #该映射情况下所有核心的最大利用率\
-                sum_uti_LO = 0
-                sum_uti_HI = 0
-                #遍历该任务所有核心
-                for i in range(start_row, start_row + task.width):
-                    for j in range(start_col, start_col + task.length):
-                        core_id = get_core_id(i, j)
-                        core_uti_LO = core_uti_list_LO[core_id]
-                        core_uti_Hi = core_uti_list_HI[core_id]
-                        sum_uti_LO += core_uti_LO
-                        sum_uti_HI += core_uti_Hi
-                core_max_uti = (max(sum_uti_LO,sum_uti_HI))/task.node_number
-                left_up_core_id = get_core_id(start_row, start_col)
-                place_max_uti_dict[left_up_core_id] = core_max_uti
-        #字典排序
-        sorted_dict = dict(sorted(place_max_uti_dict.items(), key=lambda item: item[1]))
-        last_key, _ = list(sorted_dict.items())[-1]#取最后一个键值对
-        #遍历字典
-        for left_up_core_id, _ in sorted_dict.items():
-            start_row, start_col = get_place(left_up_core_id)
-            #加入映射
-            for i in range(start_row, start_row + task.width):
-                for j in range(start_col, start_col + task.length):
-                    core_id = get_core_id(i, j)
-                    WF_DP_mapping_list[core_id].append(task.id)
-                    task.core_list_add(core_id)
-                    core_uti_list_LO[core_id] += task.uLO_core
-                    core_uti_list_HI[core_id] += task.uHI_core
-            #计算响应时间
-            cal_wcrt(WF_DP_mapping_list, ts, task, wcrt_algor)
-            #不可调度
-            if task.final_wcrt > task.dLO or task.wcrt_intertask == -1:
-                if left_up_core_id == last_key:#该任务找不到可以调度的映射位置
-                    return False
-                #清除映射
-                for i in range(start_row, start_row + task.width):
-                    for j in range(start_col, start_col + task.length):
-                        core_id = get_core_id(i, j)
-                        WF_DP_mapping_list[core_id].remove(task.id)
-                        core_uti_list_LO[core_id] -= task.uLO_core
-                        core_uti_list_HI[core_id] -= task.uHI_core
-                task.reset_core_list()
-            #可调度
-            else:
-                break
-    return WF_DP_mapping_list
-
 def BF_FF_DP(ts): #WF
     task_set = ts.HI.union(ts.LO)
     WF_FF_DP_mapping_list = [list() for _ in range(node_number)] #映射列表
