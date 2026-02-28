@@ -214,9 +214,9 @@ def mapping_uti_exper():
     # plt.yticks(fontproperties='Times New Roman', size=FigWordSize)
     # plt.legend(fontsize=FigWordSize)
     # #plt.title("per-processor utilization")pdf
-    # plt.savefig('./result/mapping_LO_uti_%d_%d.png'%(cluster_col, task_number),bbox_inches = 'tight')
-    # plt.savefig('./result/mapping_LO_uti_%d_%d.pdf'%(cluster_col, task_number),bbox_inches = 'tight')
-    # plt.savefig('./result/mapping_LO_uti_%d_%d.svg'%(cluster_col, task_number),format='svg',bbox_inches = 'tight')
+    # plt.savefig('./result/mapping_LO_uti_%d_%d.png'%(node_number, task_number),bbox_inches = 'tight')
+    # plt.savefig('./result/mapping_LO_uti_%d_%d.pdf'%(node_number, task_number),bbox_inches = 'tight')
+    # plt.savefig('./result/mapping_LO_uti_%d_%d.svg'%(node_number, task_number),format='svg',bbox_inches = 'tight')
     # plt.show()
 
     # 颜色映射：为每种主要算法分配固定颜色
@@ -275,9 +275,9 @@ def mapping_uti_exper():
     plt.xticks(fontproperties='Times New Roman', size=FigWordSize)
     plt.yticks(fontproperties='Times New Roman', size=FigWordSize)
     plt.legend(fontsize=FigWordSize)
-    plt.savefig(f'./result/mapping_LO_uti_{cluster_col}_{task_number}.png', bbox_inches='tight')
-    plt.savefig(f'./result/mapping_LO_uti_{cluster_col}_{task_number}.pdf', bbox_inches='tight')
-    plt.savefig(f'./result/mapping_LO_uti_{cluster_col}_{task_number}.svg', format='svg', bbox_inches='tight')
+    plt.savefig(f'./result/mapping_LO_uti_{node_number}_{task_number}.png', bbox_inches='tight')
+    plt.savefig(f'./result/mapping_LO_uti_{node_number}_{task_number}.pdf', bbox_inches='tight')
+    plt.savefig(f'./result/mapping_LO_uti_{node_number}_{task_number}.svg', format='svg', bbox_inches='tight')
     plt.show()
     # plt.figure()
     # xx = -1
@@ -296,9 +296,9 @@ def mapping_uti_exper():
     # plt.yticks(fontproperties='Times New Roman', size=FigWordSize)
     # plt.legend(fontsize=FigWordSize)
     # #plt.title("per-processor utilization")pdf
-    # plt.savefig('./result/mapping_LO_uti_time_%d_%d.png'%(cluster_col, task_number),bbox_inches = 'tight')
-    # plt.savefig('./result/mapping_LO_uti_time_%d_%d.pdf'%(cluster_col, task_number),bbox_inches = 'tight')
-    # plt.savefig('./result/mapping_LO_uti_time_%d_%d.svg'%(cluster_col, task_number),format='svg',bbox_inches = 'tight')
+    # plt.savefig('./result/mapping_LO_uti_time_%d_%d.png'%(node_number, task_number),bbox_inches = 'tight')
+    # plt.savefig('./result/mapping_LO_uti_time_%d_%d.pdf'%(node_number, task_number),bbox_inches = 'tight')
+    # plt.savefig('./result/mapping_LO_uti_time_%d_%d.svg'%(node_number, task_number),format='svg',bbox_inches = 'tight')
     # plt.show()
 
 def mapping_CP_exper():
@@ -464,9 +464,9 @@ def mapping_CP_exper():
     # plt.yticks(fontproperties='Times New Roman', size=FigWordSize)
     # plt.legend(fontsize=FigWordSize)
     # #plt.title("per-processor utilization")pdf
-    # plt.savefig('./result/mapping_LO_uti_%d_%d.png'%(cluster_col, task_number),bbox_inches = 'tight')
-    # plt.savefig('./result/mapping_LO_uti_%d_%d.pdf'%(cluster_col, task_number),bbox_inches = 'tight')
-    # plt.savefig('./result/mapping_LO_uti_%d_%d.svg'%(cluster_col, task_number),format='svg',bbox_inches = 'tight')
+    # plt.savefig('./result/mapping_LO_uti_%d_%d.png'%(node_number, task_number),bbox_inches = 'tight')
+    # plt.savefig('./result/mapping_LO_uti_%d_%d.pdf'%(node_number, task_number),bbox_inches = 'tight')
+    # plt.savefig('./result/mapping_LO_uti_%d_%d.svg'%(node_number, task_number),format='svg',bbox_inches = 'tight')
     # plt.show()
 
     # 颜色映射：为每种主要算法分配固定颜色
@@ -525,9 +525,9 @@ def mapping_CP_exper():
     plt.xticks(fontproperties='Times New Roman', size=FigWordSize)
     plt.yticks(fontproperties='Times New Roman', size=FigWordSize)
     plt.legend(fontsize=FigWordSize)
-    plt.savefig(f'./result/mapping_CP_{cluster_col}_{task_number}.png', bbox_inches='tight')
-    plt.savefig(f'./result/mapping_CP_{cluster_col}_{task_number}.pdf', bbox_inches='tight')
-    plt.savefig(f'./result/mapping_CP_{cluster_col}_{task_number}.svg', format='svg', bbox_inches='tight')
+    plt.savefig(f'./result/mapping_CP_{node_number}_{task_number}.png', bbox_inches='tight')
+    plt.savefig(f'./result/mapping_CP_{node_number}_{task_number}.pdf', bbox_inches='tight')
+    plt.savefig(f'./result/mapping_CP_{node_number}_{task_number}.svg', format='svg', bbox_inches='tight')
     plt.show()
     # plt.figure()
     # xx = -1
@@ -546,9 +546,9 @@ def mapping_CP_exper():
     # plt.yticks(fontproperties='Times New Roman', size=FigWordSize)
     # plt.legend(fontsize=FigWordSize)
     # #plt.title("per-processor utilization")pdf
-    # plt.savefig('./result/mapping_LO_uti_time_%d_%d.png'%(cluster_col, task_number),bbox_inches = 'tight')
-    # plt.savefig('./result/mapping_LO_uti_time_%d_%d.pdf'%(cluster_col, task_number),bbox_inches = 'tight')
-    # plt.savefig('./result/mapping_LO_uti_time_%d_%d.svg'%(cluster_col, task_number),format='svg',bbox_inches = 'tight')
+    # plt.savefig('./result/mapping_LO_uti_time_%d_%d.png'%(node_number, task_number),bbox_inches = 'tight')
+    # plt.savefig('./result/mapping_LO_uti_time_%d_%d.pdf'%(node_number, task_number),bbox_inches = 'tight')
+    # plt.savefig('./result/mapping_LO_uti_time_%d_%d.svg'%(node_number, task_number),format='svg',bbox_inches = 'tight')
     # plt.show()
 
 def mapping_CF_exper():
@@ -714,9 +714,9 @@ def mapping_CF_exper():
     # plt.yticks(fontproperties='Times New Roman', size=FigWordSize)
     # plt.legend(fontsize=FigWordSize)
     # #plt.title("per-processor utilization")pdf
-    # plt.savefig('./result/mapping_LO_uti_%d_%d.png'%(cluster_col, task_number),bbox_inches = 'tight')
-    # plt.savefig('./result/mapping_LO_uti_%d_%d.pdf'%(cluster_col, task_number),bbox_inches = 'tight')
-    # plt.savefig('./result/mapping_LO_uti_%d_%d.svg'%(cluster_col, task_number),format='svg',bbox_inches = 'tight')
+    # plt.savefig('./result/mapping_LO_uti_%d_%d.png'%(node_number, task_number),bbox_inches = 'tight')
+    # plt.savefig('./result/mapping_LO_uti_%d_%d.pdf'%(node_number, task_number),bbox_inches = 'tight')
+    # plt.savefig('./result/mapping_LO_uti_%d_%d.svg'%(node_number, task_number),format='svg',bbox_inches = 'tight')
     # plt.show()
 
     # 颜色映射：为每种主要算法分配固定颜色
@@ -775,9 +775,9 @@ def mapping_CF_exper():
     plt.xticks(fontproperties='Times New Roman', size=FigWordSize)
     plt.yticks(fontproperties='Times New Roman', size=FigWordSize)
     plt.legend(fontsize=FigWordSize)
-    plt.savefig(f'./result/mapping_CF_{cluster_col}_{task_number}.png', bbox_inches='tight')
-    plt.savefig(f'./result/mapping_CF_{cluster_col}_{task_number}.pdf', bbox_inches='tight')
-    plt.savefig(f'./result/mapping_CF_{cluster_col}_{task_number}.svg', format='svg', bbox_inches='tight')
+    plt.savefig(f'./result/mapping_CF_{node_number}_{task_number}.png', bbox_inches='tight')
+    plt.savefig(f'./result/mapping_CF_{node_number}_{task_number}.pdf', bbox_inches='tight')
+    plt.savefig(f'./result/mapping_CF_{node_number}_{task_number}.svg', format='svg', bbox_inches='tight')
     plt.show()
     # plt.figure()
     # xx = -1
@@ -796,9 +796,9 @@ def mapping_CF_exper():
     # plt.yticks(fontproperties='Times New Roman', size=FigWordSize)
     # plt.legend(fontsize=FigWordSize)
     # #plt.title("per-processor utilization")pdf
-    # plt.savefig('./result/mapping_LO_uti_time_%d_%d.png'%(cluster_col, task_number),bbox_inches = 'tight')
-    # plt.savefig('./result/mapping_LO_uti_time_%d_%d.pdf'%(cluster_col, task_number),bbox_inches = 'tight')
-    # plt.savefig('./result/mapping_LO_uti_time_%d_%d.svg'%(cluster_col, task_number),format='svg',bbox_inches = 'tight')
+    # plt.savefig('./result/mapping_LO_uti_time_%d_%d.png'%(node_number, task_number),bbox_inches = 'tight')
+    # plt.savefig('./result/mapping_LO_uti_time_%d_%d.pdf'%(node_number, task_number),bbox_inches = 'tight')
+    # plt.savefig('./result/mapping_LO_uti_time_%d_%d.svg'%(node_number, task_number),format='svg',bbox_inches = 'tight')
     # plt.show()
 
 def mapping_uti_exper_time():
@@ -941,9 +941,9 @@ def mapping_uti_exper_time():
     plt.yticks(fontproperties='Times New Roman', size=FigWordSize)
     plt.legend(fontsize=FigWordSize)
     #plt.title("per-processor utilization")pdf
-    plt.savefig('./result/mapping_LO_uti_time_%d_%d.png'%(cluster_col, task_number),bbox_inches = 'tight')
-    plt.savefig('./result/mapping_LO_uti_time_%d_%d.pdf'%(cluster_col, task_number),bbox_inches = 'tight')
-    plt.savefig('./result/mapping_LO_uti_time_%d_%d.svg'%(cluster_col, task_number),format='svg',bbox_inches = 'tight')
+    plt.savefig('./result/mapping_LO_uti_time_%d_%d.png'%(node_number, task_number),bbox_inches = 'tight')
+    plt.savefig('./result/mapping_LO_uti_time_%d_%d.pdf'%(node_number, task_number),bbox_inches = 'tight')
+    plt.savefig('./result/mapping_LO_uti_time_%d_%d.svg'%(node_number, task_number),format='svg',bbox_inches = 'tight')
     plt.show()
 
 
@@ -1002,9 +1002,9 @@ def pri_uti_exper():
     plt.yticks(fontproperties='Times New Roman', size=FigWordSize)
     plt.legend(fontsize=FigWordSize)
     #plt.title("per-processor utilization")
-    plt.savefig('./result/pri_LO_uti_%d_%d.png'%(cluster_col, task_number),bbox_inches = 'tight')
-    plt.savefig('./result/pri_LO_uti_%d_%d.pdf'%(cluster_col, task_number),bbox_inches = 'tight')
-    plt.savefig('./result/pri_LO_uti_%d_%d.svg'%(cluster_col, task_number),format='svg',bbox_inches = 'tight')
+    plt.savefig('./result/pri_LO_uti_%d_%d.png'%(node_number, task_number),bbox_inches = 'tight')
+    plt.savefig('./result/pri_LO_uti_%d_%d.pdf'%(node_number, task_number),bbox_inches = 'tight')
+    plt.savefig('./result/pri_LO_uti_%d_%d.svg'%(node_number, task_number),format='svg',bbox_inches = 'tight')
     plt.show()
 
 
@@ -1072,9 +1072,9 @@ def wcrt_uti_exper_FF():
     plt.yticks(fontproperties='Times New Roman', size=FigWordSize)
     plt.legend(fontsize=FigWordSize)
     #plt.title("per-processor utilization")
-    plt.savefig('./result/wcrt_LO_uti_FF_%d_%d.png'%(cluster_col, task_number),bbox_inches = 'tight')
-    plt.savefig('./result/wcrt_LO_uti_FF_%d_%d.pdf'%(cluster_col, task_number),bbox_inches = 'tight')
-    plt.savefig('./result/wcrt_LO_uti_FF_%d_%d.svg'%(cluster_col, task_number),format='svg',bbox_inches = 'tight')
+    plt.savefig('./result/wcrt_LO_uti_FF_%d_%d.png'%(node_number, task_number),bbox_inches = 'tight')
+    plt.savefig('./result/wcrt_LO_uti_FF_%d_%d.pdf'%(node_number, task_number),bbox_inches = 'tight')
+    plt.savefig('./result/wcrt_LO_uti_FF_%d_%d.svg'%(node_number, task_number),format='svg',bbox_inches = 'tight')
     plt.show()
 
 def wcrt_uti_exper_BF():
@@ -1160,7 +1160,7 @@ def wcrt_uti_exper_BF():
     plt.yticks(fontproperties='Times New Roman', size=FigWordSize)
     plt.legend(fontsize=FigWordSize)
     #plt.title("per-processor utilization")
-    plt.savefig('./result/wcrt_LO_uti_BF_%d_%d.png'%(cluster_col, task_number),bbox_inches = 'tight')
-    plt.savefig('./result/wcrt_LO_uti_BF_%d_%d.pdf'%(cluster_col, task_number),bbox_inches = 'tight')
-    plt.savefig('./result/wcrt_LO_uti_BF_%d_%d.svg'%(cluster_col, task_number),format='svg',bbox_inches = 'tight')
+    plt.savefig('./result/wcrt_LO_uti_BF_%d_%d.png'%(node_number, task_number),bbox_inches = 'tight')
+    plt.savefig('./result/wcrt_LO_uti_BF_%d_%d.pdf'%(node_number, task_number),bbox_inches = 'tight')
+    plt.savefig('./result/wcrt_LO_uti_BF_%d_%d.svg'%(node_number, task_number),format='svg',bbox_inches = 'tight')
     plt.show()
