@@ -119,8 +119,7 @@ def FF_DU(ts, wcrt_algor=amc_rtb_wcrt):
     tasks = sorted(task_set, key=lambda task: max(task.uLO, task.uHI), reverse=True)
     return _first_fit(tasks, ts, wcrt_algor)
 
-
-def FF_DP(ts, wcrt_algor=amc_rtb_wcrt):
+def BF_FF_DP(ts): #WF
     task_set = ts.HI.union(ts.LO)
     tasks = sorted(task_set, key=lambda task: task.pri, reverse=True)
     return _first_fit(tasks, ts, wcrt_algor)
