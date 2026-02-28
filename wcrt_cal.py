@@ -369,7 +369,7 @@ def _dag_job_runnable(job, current_time, completed_jobs):
 def _get_runnable_jobs(job_list, current_time, completed_jobs):
         return [job for job in job_list if _dag_job_runnable(job, current_time, completed_jobs)]
 
-def amc_rtb_pr(task_set, T, tasks):#rLO后移除低关键度任务
+def new_wcrt_5(task_set, T, tasks):#为作业同时执行加入额外条件
         hp = tasks - set([T])
         hpH = tasks.intersection(task_set.HI) - set([T])
         hpL = tasks.intersection(task_set.LO) - task_set.HI - set([T])
