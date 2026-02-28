@@ -2,7 +2,6 @@ import random
 from math import *
 from utilization_generate import drs
 minDelta = 0
-task_length_max = 3
 switch_con = 0.1
 class MCTask(object):
     """object for a Mixed-criticality task  """
@@ -36,8 +35,6 @@ class MCTask(object):
                 self.slack = self.dLO - self.eLO
         self.preempt = 0
         # 单任务默认映射到单核，保持与映射和实验脚本中的属性一致
-        self.width = 1
-        self.length = 1
         self.node_number = 1
         # DAG 相关属性
         self.dag_id = -1
@@ -46,7 +43,7 @@ class MCTask(object):
 
 
     def info(self):
-        task_info = "task_id:" + str(self.id) + "   pri:" + str(self.pri) + "   eLO:" + str(self.eLO) + "   eHI:" + str(self.eHI) + "   peried:" + str(self.dLO) + "   length:" + str(self.length) + "   cri:" + str(self.cri) + "   io_delay:" + str(self.io_delay) + "   switch_delay:" + str(self.switch_delay) + "   wcrt_intertask:" + str(self.wcrt_intertask)+ "   final_wcrt:" + str(self.final_wcrt)
+        task_info = "task_id:" + str(self.id) + "   pri:" + str(self.pri) + "   eLO:" + str(self.eLO) + "   eHI:" + str(self.eHI) + "   peried:" + str(self.dLO) + "   cri:" + str(self.cri) + "   io_delay:" + str(self.io_delay) + "   switch_delay:" + str(self.switch_delay) + "   wcrt_intertask:" + str(self.wcrt_intertask)+ "   final_wcrt:" + str(self.final_wcrt)
         return task_info
         #print("task_id:",self.id,"pri:",self.pri,"eLO:",self.eLO,"eHI",self.eHI,"peried and deadline:",self.dLO,"node_number",self.node_number,"cri",self.cri)
     def reset(self):
@@ -502,7 +499,7 @@ class Drs_gengerate(MCTaskSet):
             cri = 0 if i<number_HItasks else 1
             T = MCTask(i,eLO/core_nums[i],eHI/core_nums[i],pHI,pHI,pHI,pHI,cri)
             #T = MCTask(i+1,eLO,eHI,pHI,pHI,pHI,pHI,core_nums[i],cri)
-            for i in range(T.length):
+            for i in range(T.node_number):
                     io = random.randint(10, 1000)
                     T.io_list.append(io)
             self.add(T, T.cri)

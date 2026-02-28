@@ -5,6 +5,7 @@ MAX = 10000000000000000
 L_R = 0.001
 L_W = 0.00001
 unit_time = 10
+node_number = 16
 '''
 #判断抢占当前任务的任务是否会被其他任务抢占
 def judge_preempt(mapping_list, task_to_judge, task_current_id, ts):
@@ -502,14 +503,6 @@ def new_wcrt_5(task_set, T, tasks):#为作业同时执行加入额外条件
         return max(rLO, rHI)                         
                              
 
-def get_place(core_id):
-    if core_id % cluster_row == 0:
-        row = floor(core_id / cluster_row)
-    else:
-        row = core_id // cluster_row
-    col = core_id % cluster_row
-    return row, col
-
 def get_content_task_set(mapping_list, task_set, task_number):
     content_task_set = [list() for _ in range(task_number)]
     for task in task_set:
@@ -692,16 +685,13 @@ def amc_rtb_wcrt_new(task_set, T, tasks):
         return max(rLO, rHI)
 
 def get_io_dis(task):
-        up_left_core = task.core_list[0]
-        #down_right_core = up_left_core + cluster_row * (task.length - 1) + (task.width - 1)
-        down_right_core = task.core_list[-1]
-        up_dis, left_dis = get_place(up_left_core)
-        down, right = get_place(down_right_core)
-        down_dis = cluster_col - down - 1
-        right_dis = cluster_row - right - 1
-        dis_list = [up_dis, left_dis, down_dis, right_dis]
-        min_dis = min(dis_list)
-        task.io_dis = min_dis
+        # 线性核心拓扑：I/O 距离定义为到两侧边界的最小跳数
+        if not task.core_list:
+                task.io_dis = 0
+                return
+        left = min(task.core_list)
+        right = max(task.core_list)
+        task.io_dis = min(left, node_number - 1 - right)
 
 def cal_io_delay(task):
         max_io = max(task.io_list)
