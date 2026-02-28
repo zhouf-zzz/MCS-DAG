@@ -35,6 +35,14 @@ class MCTask(object):
         else:
                 self.slack = self.dLO - self.eLO
         self.preempt = 0
+        # 单任务默认映射到单核，保持与映射和实验脚本中的属性一致
+        self.width = 1
+        self.length = 1
+        self.node_number = 1
+        # DAG 相关属性
+        self.dag_id = -1
+        self.predecessors = set()
+        self.successors = set()
 
 
     def info(self):
@@ -464,7 +472,7 @@ class MCTaskSet(object):
 
 class Drs_gengerate(MCTaskSet):
 
-    def __init__(self, numTask, sumU, CF, CP, numCore=1):
+    def __init__(self, numTask, sumU, CF, CP, numCore=1, dag_size_range=(3, 6), edge_prob=0.4):
         MCTaskSet.__init__(self)
         # 高关键度任务的个数
         number_HItasks = (int)(numTask * CP)
@@ -498,3 +506,49 @@ class Drs_gengerate(MCTaskSet):
                     io = random.randint(10, 1000)
                     T.io_list.append(io)
             self.add(T, T.cri)
+        self._build_task_dags(dag_size_range=dag_size_range, edge_prob=edge_prob)
+
+    def _add_edge(self, src_task, dst_task):
+        src_task.successors.add(dst_task.id)
+        dst_task.predecessors.add(src_task.id)
+
+    def _build_task_dags(self, dag_size_range=(3, 6), edge_prob=0.4):
+        """
+        将任务划分为多个 DAG，并满足约束：
+        1) 每个任务为单核任务（在 MCTask 中固定为 node_number=1）。
+        2) 一个 DAG 中，若目标任务为 HI 关键度，则其所有前置任务也必须为 HI 关键度。
+        """
+        tasks = sorted(list(self.LO), key=lambda task: task.id)
+        if not tasks:
+            return
+
+        min_size, max_size = dag_size_range
+        min_size = max(1, min_size)
+        max_size = max(min_size, max_size)
+
+        start = 0
+        dag_id = 0
+        while start < len(tasks):
+            dag_size = random.randint(min_size, max_size)
+            dag_tasks = tasks[start:start + dag_size]
+            if not dag_tasks:
+                break
+
+            for task in dag_tasks:
+                task.dag_id = dag_id
+                task.predecessors = set()
+                task.successors = set()
+
+            for dst_idx in range(1, len(dag_tasks)):
+                dst_task = dag_tasks[dst_idx]
+                for src_idx in range(dst_idx):
+                    src_task = dag_tasks[src_idx]
+                    if random.random() > edge_prob:
+                        continue
+                    # HI 任务的前置任务必须是 HI 任务
+                    if dst_task.cri == 0 and src_task.cri != 0:
+                        continue
+                    self._add_edge(src_task, dst_task)
+
+            start += dag_size
+            dag_id += 1
