@@ -5,6 +5,20 @@ MAX = 10000000000000000
 L_R = 0.001
 L_W = 0.00001
 unit_time = 10
+
+# 同构多核处理器默认配置。
+# 保留 cluster_row/cluster_col 以兼容现有二维映射逻辑，
+# 但统一为“同构核心网格”，不再区分异构处理器类型。
+HOMOGENEOUS_GRID_ROWS = 4
+HOMOGENEOUS_GRID_COLS = 4
+cluster_row = HOMOGENEOUS_GRID_ROWS
+cluster_col = HOMOGENEOUS_GRID_COLS
+
+def set_homogeneous_architecture(rows=HOMOGENEOUS_GRID_ROWS, cols=HOMOGENEOUS_GRID_COLS):
+    """设置同构多核架构规模（兼容 mapping.py 现有 cluster_row/cluster_col 依赖）。"""
+    global cluster_row, cluster_col
+    cluster_row = rows
+    cluster_col = cols
 '''
 #判断抢占当前任务的任务是否会被其他任务抢占
 def judge_preempt(mapping_list, task_to_judge, task_current_id, ts):
