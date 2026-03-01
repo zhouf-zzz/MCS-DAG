@@ -509,6 +509,30 @@ class Drs_gengerate(MCTaskSet):
         src_task.successors.add(dst_task.id)
         dst_task.predecessors.add(src_task.id)
 
+    def _can_add_edge_with_deadline_constraint(self, dag_tasks, src_task, dst_task):
+        """
+        在连边前进行可行性检查：若加入 src->dst 后，DAG 中任意任务都满足
+        Ti.eLO + longest_path_exec_time(Ti) <= Ti.dLO，则允许加入该边。
+        """
+        task_by_id = {task.id: task for task in dag_tasks}
+        longest_suffix = {}
+
+        for task in reversed(dag_tasks):
+            max_suffix = 0
+            for succ_id in task.successors:
+                succ_task = task_by_id.get(succ_id)
+                if succ_task is None:
+                    continue
+                max_suffix = max(max_suffix, succ_task.eLO + longest_suffix.get(succ_id, 0))
+
+            if task.id == src_task.id:
+                max_suffix = max(max_suffix, dst_task.eLO + longest_suffix.get(dst_task.id, 0))
+
+            if task.eLO + max_suffix > task.dLO:
+                return False
+            longest_suffix[task.id] = max_suffix
+        return True
+
     def _build_task_dags(self, dag_size_range=(3, 6), edge_prob=0.4):
         """
         将任务划分为多个 DAG，并满足约束：
@@ -545,7 +569,9 @@ class Drs_gengerate(MCTaskSet):
                     # HI 任务的前置任务必须是 HI 任务
                     if dst_task.cri == 0 and src_task.cri != 0:
                         continue
-                    self._add_edge(src_task, dst_task)
+                    if self._can_add_edge_with_deadline_constraint(dag_tasks, src_task, dst_task):
+                        self._add_edge(src_task, dst_task)
+
 
             start += dag_size
             dag_id += 1
