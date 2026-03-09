@@ -26,6 +26,8 @@
 
 
 ## 5) 当前多核 cal_wcrt 策略（忽略通信开销）
-- 对目标任务所在 DAG 的已映射节点，逐个计算局部 WCRT（同核高优先级干扰）。
-- 再按 DAG 前驱关系做最长路径聚合：`finish(v)=local_wcrt(v)+max(finish(pred(v)))`。
-- 目标任务的 `wcrt_intertask` 为其局部 WCRT，`final_wcrt` 为聚合后的 DAG 完成时间上界。
+- 采用 Partitioned 固定优先级 + 两层分析：
+  - 层1（核内 AMC-RTB）：对 DAG 内每个已映射节点，在其所在核心上计算局部 WCRT。
+  - 层2（DAG 全局 RTA）：对已映射 DAG 做拓扑排序并递推 `finish(v)=local_wcrt(v)+max(finish(pred(v)))`。
+- DAG 截止期判定口径（当前实现）：所有 sink 节点满足 `finish(sink) <= sink.dLO`；任一节点局部 WCRT 不可解（-1）则 DAG 不可调度。
+- `cal_wcrt` 对外暴露：`wcrt_intertask` 为节点局部 WCRT，`final_wcrt` 为节点全局完成时间上界。

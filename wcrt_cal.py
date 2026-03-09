@@ -710,38 +710,134 @@ def _calc_dag_finish_time(task, dag_task_dict, local_wcrt_map, memo):
         return finish
 
 
+def _topo_order_mapped_dag(dag_tasks):
+        """返回已映射 DAG 节点的拓扑序（若图非法则返回空列表）。"""
+        task_by_id = {task.id: task for task in dag_tasks}
+        indegree = {task.id: 0 for task in dag_tasks}
+        for task in dag_tasks:
+                for pred_id in task.predecessors:
+                        if pred_id in task_by_id:
+                                indegree[task.id] += 1
+
+        queue = [task_id for task_id, deg in indegree.items() if deg == 0]
+        order = []
+        while queue:
+                current = queue.pop(0)
+                order.append(current)
+                for succ_id in task_by_id[current].successors:
+                        if succ_id not in indegree:
+                                continue
+                        indegree[succ_id] -= 1
+                        if indegree[succ_id] == 0:
+                                queue.append(succ_id)
+        if len(order) != len(dag_tasks):
+                return []
+        return order
+
+
+def analyze_dag_partitioned_fp(mapping_list, ts, dag_id, wcrt_algor=amc_rtb_wcrt):
+        """
+        Partitioned 固定优先级 + 两层分析：
+        层1（核内）：每个节点在其映射核上做 AMC-RTB 局部 WCRT。
+        层2（DAG 全局）：按前驱关系做全局 RTA 聚合。
+
+        当前版本忽略通信开销，DAG 截止期口径为：每个 sink 节点满足 finish<=sink.dLO。
+        """
+        task_set = ts.HI.union(ts.LO)
+        mapped_ids = _get_mapped_task_ids(mapping_list)
+        dag_tasks = [task for task in task_set if task.dag_id == dag_id and task.id in mapped_ids]
+        if not dag_tasks:
+                return {
+                        'schedulable': True,
+                        'dag_tasks': [],
+                        'local_wcrt_map': {},
+                        'finish_map': {},
+                        'sink_ids': [],
+                }
+
+        local_wcrt_map = {}
+        for task in dag_tasks:
+                wcrt = _calc_task_local_wcrt(mapping_list, ts, task, wcrt_algor)
+                local_wcrt_map[task.id] = wcrt
+                task.wcrt_intertask = wcrt
+                if wcrt == -1:
+                        task.final_wcrt = -1
+                        return {
+                                'schedulable': False,
+                                'dag_tasks': dag_tasks,
+                                'local_wcrt_map': local_wcrt_map,
+                                'finish_map': {},
+                                'sink_ids': [],
+                        }
+
+        order = _topo_order_mapped_dag(dag_tasks)
+        if not order:
+                return {
+                        'schedulable': False,
+                        'dag_tasks': dag_tasks,
+                        'local_wcrt_map': local_wcrt_map,
+                        'finish_map': {},
+                        'sink_ids': [],
+                }
+
+        task_by_id = {task.id: task for task in dag_tasks}
+        finish_map = {}
+        for task_id in order:
+                task = task_by_id[task_id]
+                pred_finish = 0
+                for pred_id in task.predecessors:
+                        if pred_id in finish_map:
+                                pred_finish = max(pred_finish, finish_map[pred_id])
+                finish_map[task_id] = local_wcrt_map[task_id] + pred_finish
+                task.final_wcrt = finish_map[task_id]
+
+        mapped_id_set = set(task_by_id.keys())
+        sink_ids = [
+                task.id for task in dag_tasks
+                if len(set(task.successors).intersection(mapped_id_set)) == 0
+        ]
+        for sink_id in sink_ids:
+                sink = task_by_id[sink_id]
+                if finish_map[sink_id] > sink.dLO:
+                        return {
+                                'schedulable': False,
+                                'dag_tasks': dag_tasks,
+                                'local_wcrt_map': local_wcrt_map,
+                                'finish_map': finish_map,
+                                'sink_ids': sink_ids,
+                        }
+
+        return {
+                'schedulable': True,
+                'dag_tasks': dag_tasks,
+                'local_wcrt_map': local_wcrt_map,
+                'finish_map': finish_map,
+                'sink_ids': sink_ids,
+        }
+
+
 def cal_wcrt(mapping_list, ts, task, wcrt_algor = amc_rtb_wcrt):
         """
         多核DAG场景（暂不计通信开销）：
         1) 先计算目标DAG内已映射任务的局部WCRT；
         2) 再按前驱关系聚合得到目标任务的端到端完成时间上界。
         """
-        task_set = ts.HI.union(ts.LO)
         mapped_ids = _get_mapped_task_ids(mapping_list)
-
         if task.id not in mapped_ids:
                 task.wcrt_intertask = 0
                 task.final_wcrt = 0
                 return
 
-        dag_tasks = [t for t in task_set if t.dag_id == task.dag_id and t.id in mapped_ids]
-        dag_task_dict = {t.id: t for t in dag_tasks}
+        analysis = analyze_dag_partitioned_fp(mapping_list, ts, task.dag_id, wcrt_algor)
+        if task.id not in analysis['local_wcrt_map']:
+                task.wcrt_intertask = 0
+                task.final_wcrt = 0
+                return
 
-        local_wcrt_map = {}
-        for dag_task in dag_tasks:
-                wcrt = _calc_task_local_wcrt(mapping_list, ts, dag_task, wcrt_algor)
-                local_wcrt_map[dag_task.id] = wcrt
-                dag_task.wcrt_intertask = wcrt
-                if wcrt == -1:
-                        dag_task.final_wcrt = -1
-
-        if local_wcrt_map.get(task.id, -1) == -1:
-            task.wcrt_intertask = -1
-            task.final_wcrt = -1
-            return
-
-        finish_time = _calc_dag_finish_time(task, dag_task_dict, local_wcrt_map, memo={})
-        task.wcrt_intertask = local_wcrt_map[task.id]
-        task.final_wcrt = finish_time
+        task.wcrt_intertask = analysis['local_wcrt_map'][task.id]
+        if task.wcrt_intertask == -1:
+                task.final_wcrt = -1
+                return
+        task.final_wcrt = analysis['finish_map'][task.id]
 
         

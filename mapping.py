@@ -42,28 +42,8 @@ def _dag_deadline_ok(mapping_list, ts, dag_id, wcrt_algor=amc_rtb_wcrt):
     2) DAG 出口节点（无后继或后继未映射）的 end-to-end 完成时间 `final_wcrt`
        不得超过该出口节点的 dLO（当前项目中作为 DAG 截止期约束口径）。
     """
-    task_set = ts.HI.union(ts.LO)
-    mapped_ids = _mapped_task_ids(mapping_list)
-    dag_tasks = [t for t in task_set if t.dag_id == dag_id and t.id in mapped_ids]
-    if not dag_tasks:
-        return True
-
-    mapped_id_set = {t.id for t in dag_tasks}
-
-    for task in dag_tasks:
-        cal_wcrt(mapping_list, ts, task, wcrt_algor)
-        if task.wcrt_intertask == -1:
-            return False
-
-    sink_tasks = [
-        task for task in dag_tasks
-        if len(set(task.successors).intersection(mapped_id_set)) == 0
-    ]
-    for sink in sink_tasks:
-        cal_wcrt(mapping_list, ts, sink, wcrt_algor)
-        if sink.final_wcrt == -1 or sink.final_wcrt > sink.dLO:
-            return False
-    return True
+    analysis = analyze_dag_partitioned_fp(mapping_list, ts, dag_id, wcrt_algor)
+    return analysis['schedulable']
 
 
 def _all_mapped_dags_deadline_ok(mapping_list, ts, wcrt_algor=amc_rtb_wcrt):
