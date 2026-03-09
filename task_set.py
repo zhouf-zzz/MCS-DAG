@@ -33,7 +33,6 @@ class MCTask(object):
                 self.slack = self.dHI - self.eHI
         else:
                 self.slack = self.dLO - self.eLO
-        self.preempt = 0
         # 单任务默认映射到单核，保持与映射和实验脚本中的属性一致
         self.node_number = 1
         # DAG 相关属性
@@ -70,7 +69,7 @@ class MCTaskSet(object):
                 self.sch =  True   # sch represents whether the mixed-criticality taskset is schedulable.
                 
         def reset(self):
-                for T in self.HI.union(self.LO).union(self.HILO):
+                for T in self.HI.union(self.LO):
                         T.reset()
 
 
