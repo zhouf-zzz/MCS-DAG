@@ -17,25 +17,10 @@ def judge_preempt(mapping_list, task_to_judge, task_current_id, ts):
                                        return True
         return False
 '''
-#判断两个任务是否重叠
-def jugde_overlap(task, task_list):
-        for tasks in task_list:
-                intersection_set = set(task.core_list) & set(tasks.core_list)
-                if len(intersection_set) > 0:
-                        return True
-        return False
-
 #判断一个任务是否可能会被抢占
 def judge_preempt(mapping_list, ts):
-        task_set = ts.HI.union(ts.LO)
-        for task in task_set:
-                for core in task.core_list:
-                        for content_task_id in mapping_list[core]:
-                                content_task = ts.get_task_by_id(content_task_id)
-                                if content_task.pri > task.pri:
-                                        task.preempt = 1
-                                if content_task.pri == task.pri:
-                                        print("还没有给任务集赋予优先级")
+        """兼容历史接口：单核映射下不再维护并行抢占标记。"""
+        return
                              
                
 '''
@@ -91,14 +76,7 @@ def get_real_content_task_set_hi_pri(mapping_list, ts, task_number):#废案
 '''
 
 def choose_job(job_list):
-        job_list = sorted(job_list, key=lambda task:task.pri, reverse = False)
-        choose_list = []
-        first_task = job_list[0]
-        choose_list.append(first_task)
-        for job in job_list[1:]:
-                if jugde_overlap(job, choose_list) == False:
-                        choose_list.append(job)
-        return choose_list
+        return [sorted(job_list, key=lambda task: task.pri, reverse=False)[0]]
 
 def get_min_exe_LO(choose_list):
         min_exe = MAX
@@ -342,20 +320,11 @@ def new_wcrt_4_original(task_set, T, tasks):#修改循环终止条件：从作�
 
 
 def choose_job_new(job_list):
-        job_list = sorted(job_list, key=lambda task:task.pri, reverse = False)
-        choose_list = []
-        first_job = job_list[0]
-        choose_list.append(first_job)
-        if first_job.preempt == 1:
-               return choose_list
-        else:
-                for job in job_list[1:]:
-                        if job.preempt == 1:
-                                continue
-                        else:
-                                if jugde_overlap(job, choose_list) == False:
-                                        choose_list.append(job)
-        return choose_list
+        """
+        单核映射下，每个时刻仅执行一个作业：
+        直接返回当前可运行作业中优先级最高的作业。
+        """
+        return [sorted(job_list, key=lambda task: task.pri, reverse=False)[0]]
 
 def _mark_job_release(job, release_time):
         """为作业实例补充释放时刻和DAG前置约束信息。"""
