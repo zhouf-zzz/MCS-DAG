@@ -7,7 +7,7 @@
 - `MCTaskSet.reset()` 已统一按 `HI ∪ LO` 重置任务状态。
 
 ## 2) 系统处理器模型（Processor/Core Model）
-- 处理器被建模为线性 16 核（`node_number=16`），映射结构 `mapping_list` 是长度为 16 的列表。
+- 处理器被建模为线性 4 核（`node_number=4`），映射结构 `mapping_list` 是长度为 4 的列表。
 - 映射算法包括 `FF/BF/WF + DU/DP` 变体，放置验证统一调用 `cal_wcrt(...)`。
 - 若任务 `final_wcrt > dLO` 或 `wcrt_intertask == -1`，则该次放置失败并回退。
 
@@ -22,3 +22,9 @@
 ## 4) 与映射流程的衔接
 - `cal_wcrt` 会先依据当前映射构建与目标任务有竞争关系的任务集合，再筛选高优先级干扰任务，最后调用指定 WCRT 算法（默认 `amc_rtb_wcrt`）。
 - 因此映射可行性本质上由“该映射下任务的 AMC-RTB 响应时间是否满足截止期”决定。
+
+
+## 5) 当前多核 cal_wcrt 策略（忽略通信开销）
+- 对目标任务所在 DAG 的已映射节点，逐个计算局部 WCRT（同核高优先级干扰）。
+- 再按 DAG 前驱关系做最长路径聚合：`finish(v)=local_wcrt(v)+max(finish(pred(v)))`。
+- 目标任务的 `wcrt_intertask` 为其局部 WCRT，`final_wcrt` 为聚合后的 DAG 完成时间上界。

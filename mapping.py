@@ -2,7 +2,7 @@ import random
 from wcrt_cal import *
 
 # 线性核心模型：不再使用二维行/列拓扑
-node_number = 16
+node_number = 4
 MAX = 1000000000000
 
 

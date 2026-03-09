@@ -5,7 +5,7 @@ MAX = 10000000000000000
 L_R = 0.001
 L_W = 0.00001
 unit_time = 10
-node_number = 16
+node_number = 4
 '''
 #判断抢占当前任务的任务是否会被其他任务抢占
 def judge_preempt(mapping_list, task_to_judge, task_current_id, ts):
@@ -671,20 +671,77 @@ def get_e_new(task):
         task.eLO_new = task.eLO + task.io_delay + task.switch_delay
         task.eHI_new = task.eHI + task.io_delay + task.switch_delay
 
-def cal_wcrt(mapping_list, ts, task, wcrt_algor = amc_rtb_wcrt):
-        #get_io_dis(task)
-        #cal_io_delay(task)
-        #get_e_new(task)
+def _get_mapped_task_ids(mapping_list):
+        mapped_ids = set()
+        for core_tasks in mapping_list:
+                mapped_ids.update(core_tasks)
+        return mapped_ids
+
+
+def _calc_task_local_wcrt(mapping_list, ts, task, wcrt_algor=amc_rtb_wcrt):
+        """
+        计算任务在其映射核上的局部WCRT（仅考虑共享核心的高优先级干扰）。
+        """
         task_set = ts.HI.union(ts.LO)
         content_task_list = get_content_task_set(mapping_list, task_set, len(task_set))
         content_task_set_HI_pri = set()
-        for id in content_task_list[task.id]:
-                content_task = ts.get_task_by_id(id)
+        for task_id in content_task_list[task.id]:
+                content_task = ts.get_task_by_id(task_id)
                 if content_task.pri > task.pri:
                         content_task_set_HI_pri.add(content_task)
-        #wcrt = amc_rtb_pts_wcrt_btTask_sch(ts, task, content_task_set_HI_pri)
-        wcrt = wcrt_algor(ts, task, content_task_set_HI_pri)
-        task.wcrt_intertask = wcrt
-        task.final_wcrt = wcrt
+        return wcrt_algor(ts, task, content_task_set_HI_pri)
+
+
+def _calc_dag_finish_time(task, dag_task_dict, local_wcrt_map, memo):
+        """
+        忽略通信开销下的DAG端到端完成时间：
+        finish(v) = local_wcrt(v) + max(finish(pred(v))).
+        """
+        if task.id in memo:
+                return memo[task.id]
+        pred_finish = 0
+        for pred_id in task.predecessors:
+                pred_task = dag_task_dict.get(pred_id)
+                if pred_task is None:
+                        continue
+                pred_finish = max(pred_finish, _calc_dag_finish_time(pred_task, dag_task_dict, local_wcrt_map, memo))
+        finish = local_wcrt_map[task.id] + pred_finish
+        memo[task.id] = finish
+        return finish
+
+
+def cal_wcrt(mapping_list, ts, task, wcrt_algor = amc_rtb_wcrt):
+        """
+        多核DAG场景（暂不计通信开销）：
+        1) 先计算目标DAG内已映射任务的局部WCRT；
+        2) 再按前驱关系聚合得到目标任务的端到端完成时间上界。
+        """
+        task_set = ts.HI.union(ts.LO)
+        mapped_ids = _get_mapped_task_ids(mapping_list)
+
+        if task.id not in mapped_ids:
+                task.wcrt_intertask = 0
+                task.final_wcrt = 0
+                return
+
+        dag_tasks = [t for t in task_set if t.dag_id == task.dag_id and t.id in mapped_ids]
+        dag_task_dict = {t.id: t for t in dag_tasks}
+
+        local_wcrt_map = {}
+        for dag_task in dag_tasks:
+                wcrt = _calc_task_local_wcrt(mapping_list, ts, dag_task, wcrt_algor)
+                local_wcrt_map[dag_task.id] = wcrt
+                dag_task.wcrt_intertask = wcrt
+                if wcrt == -1:
+                        dag_task.final_wcrt = -1
+
+        if local_wcrt_map.get(task.id, -1) == -1:
+            task.wcrt_intertask = -1
+            task.final_wcrt = -1
+            return
+
+        finish_time = _calc_dag_finish_time(task, dag_task_dict, local_wcrt_map, memo={})
+        task.wcrt_intertask = local_wcrt_map[task.id]
+        task.final_wcrt = finish_time
 
         
