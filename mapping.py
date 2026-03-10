@@ -136,16 +136,86 @@ def _fit_by_pressure(tasks, ts, descending=False, wcrt_algor=amc_rtb_wcrt):
     return mapping_list
 
 
+def _core_hp_interference_score(core_task_ids, task_by_id, task):
+    """估计把 task 放入当前核心后受到的高优先级干扰强度。"""
+    score = 0.0
+    for task_id in core_task_ids:
+        core_task = task_by_id.get(task_id)
+        if core_task is None:
+            continue
+        if core_task.pri > task.pri:
+            score += max(_task_u_lo(core_task), _task_u_hi(core_task))
+    return score
+
+
+def _dag_criticality_impact(task_by_id, mapped_ids, task, target_core):
+    """估计将任务放到目标核心后对 DAG 关键链带来的跨核边压力（忽略通信开销时用于排序）。"""
+    impact = 0.0
+
+    for pred_id in task.predecessors:
+        pred = task_by_id.get(pred_id)
+        if pred is None or pred_id not in mapped_ids or len(pred.core_list) == 0:
+            continue
+        if pred.core_list[0] != target_core:
+            impact += 1.0
+
+    for succ_id in task.successors:
+        succ = task_by_id.get(succ_id)
+        if succ is None or succ_id not in mapped_ids or len(succ.core_list) == 0:
+            continue
+        if succ.core_list[0] != target_core:
+            impact += 1.0
+
+    return impact
+
+
+def BF_DIP(ts, alpha=0.4, beta=0.4, gamma=0.2, wcrt_algor=amc_rtb_wcrt):
+    """
+    Best-Fit Decreasing by Interference Pressure:
+    score(core) = alpha * utilization_pressure + beta * hp_interference + gamma * dag_impact
+    """
+    task_set = ts.HI.union(ts.LO)
+    tasks = sorted(task_set, key=lambda task: max(_task_u_lo(task), _task_u_hi(task)), reverse=True)
+    task_by_id = {task.id: task for task in task_set}
+
+    mapping_list = _empty_mapping()
+    core_uti_list_LO = [0.0 for _ in range(node_number)]
+    core_uti_list_HI = [0.0 for _ in range(node_number)]
+
+    for task in tasks:
+        mapped_ids = _mapped_task_ids(mapping_list)
+        candidates = []
+        for core_id in range(node_number):
+            lo = core_uti_list_LO[core_id] + _task_u_lo(task)
+            hi = core_uti_list_HI[core_id] + _task_u_hi(task)
+            utilization_pressure = max(lo, hi)
+            hp_interference = _core_hp_interference_score(mapping_list[core_id], task_by_id, task)
+            dag_impact = _dag_criticality_impact(task_by_id, mapped_ids, task, core_id)
+            score = alpha * utilization_pressure + beta * hp_interference + gamma * dag_impact
+            candidates.append((core_id, score, lo, hi))
+
+        candidates.sort(key=lambda x: x[1])
+
+        placed = False
+        for core_id, _, lo, hi in candidates:
+            _try_place(mapping_list, task, core_id)
+            if _all_mapped_dags_deadline_ok(mapping_list, ts, wcrt_algor):
+                core_uti_list_LO[core_id] = lo
+                core_uti_list_HI[core_id] = hi
+                placed = True
+                break
+            _undo_place(mapping_list, task, core_id)
+
+        if not placed:
+            return False
+
+    return mapping_list
+
+
 def FF_DU(ts, wcrt_algor=amc_rtb_wcrt):
     task_set = ts.HI.union(ts.LO)
     tasks = sorted(task_set, key=lambda task: max(task.uLO, task.uHI), reverse=True)
     return _first_fit(tasks, ts, wcrt_algor)
-
-def BF_FF_DP(ts): #WF
-    task_set = ts.HI.union(ts.LO)
-    tasks = sorted(task_set, key=lambda task: task.pri, reverse=True)
-    return _first_fit(tasks, ts, wcrt_algor)
-
 
 def BF_DU(ts, wcrt_algor=amc_rtb_wcrt):
     task_set = ts.HI.union(ts.LO)
