@@ -1,6 +1,6 @@
+import os
 import time
-from task_set import Drs_gengerate
-from mapping import FF_DP, WF_DU, BF_DIP, _all_mapped_dags_deadline_ok
+from mapping import _all_mapped_dags_deadline_ok
 
 
 def _reset_tasks(ts):
@@ -35,6 +35,9 @@ def validate_mapping_reliability(
 
     输出每个利用率下三种算法的可调度率与运行时间。
     """
+    from task_set import Drs_gengerate
+    from mapping import FF_DP, WF_DU, BF_DIP
+
     algorithms = {
         "BF_DIP": BF_DIP,
         "FF_DP": FF_DP,
@@ -76,6 +79,14 @@ def validate_mapping_reliability(
     summary = {
         "utilization": uti_list,
         "algorithms": {},
+        "meta": {
+            "task_number": task_number,
+            "node_number": node_number,
+            "cycles": cycles,
+            "uti_start": uti_start,
+            "uti_step": uti_step,
+            "uti_points": uti_points,
+        },
     }
 
     for name in algorithms:
@@ -101,6 +112,80 @@ def print_validation_report(summary):
             )
 
 
-if __name__ == "__main__":
-    summary = validate_mapping_reliability()
+def plot_validation_summary(summary, out_dir="result", prefix="mapping_validation"):
+    """绘制并保存三类图：可调度率、平均运行时间、不一致次数。"""
+    os.makedirs(out_dir, exist_ok=True)
+
+    uti_list = summary["utilization"]
+    algos = summary["algorithms"]
+    colors = {
+        "BF_DIP": "royalblue",
+        "FF_DP": "seagreen",
+        "WF_DU": "darkorange",
+    }
+    markers = {
+        "BF_DIP": "o",
+        "FF_DP": "s",
+        "WF_DU": "^",
+    }
+
+    import matplotlib.pyplot as plt
+
+    def _plot(metric_key, y_label, filename):
+        plt.figure(figsize=(7, 4.5))
+        for name, stats in algos.items():
+            plt.plot(
+                uti_list,
+                stats[metric_key],
+                linewidth=1.5,
+                marker=markers.get(name, "o"),
+                color=colors.get(name, None),
+                label=name,
+            )
+        plt.xlabel("System Utilization")
+        plt.ylabel(y_label)
+        plt.grid(True, linestyle="--", alpha=0.4)
+        plt.legend()
+        plt.tight_layout()
+        png_path = os.path.join(out_dir, f"{prefix}_{filename}.png")
+        pdf_path = os.path.join(out_dir, f"{prefix}_{filename}.pdf")
+        plt.savefig(png_path, bbox_inches="tight")
+        plt.savefig(pdf_path, bbox_inches="tight")
+        plt.close()
+        return png_path, pdf_path
+
+    paths = {
+        "schedulable_ratio": _plot("schedulable_ratio", "Schedulable Ratio", "schedulable_ratio"),
+        "avg_runtime_s": _plot("avg_runtime_s", "Average Runtime (s)", "avg_runtime"),
+        "inconsistent_count": _plot("inconsistent_count", "Inconsistent Count", "inconsistent"),
+    }
+    return paths
+
+
+def run_validation_with_plots(
+    task_number=20,
+    node_number=4,
+    cycles=100,
+    uti_start=0.2,
+    uti_step=0.1,
+    uti_points=6,
+    out_dir="result",
+):
+    summary = validate_mapping_reliability(
+        task_number=task_number,
+        node_number=node_number,
+        cycles=cycles,
+        uti_start=uti_start,
+        uti_step=uti_step,
+        uti_points=uti_points,
+    )
     print_validation_report(summary)
+    figure_paths = plot_validation_summary(summary, out_dir=out_dir)
+    return summary, figure_paths
+
+
+if __name__ == "__main__":
+    summary, figure_paths = run_validation_with_plots()
+    print("\nSaved figures:")
+    for metric, paths in figure_paths.items():
+        print(f"  {metric}: {paths[0]}, {paths[1]}")
