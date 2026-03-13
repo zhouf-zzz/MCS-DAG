@@ -502,7 +502,7 @@ class MCTaskSet(object):
 
 class Drs_gengerate(MCTaskSet):
 
-    def __init__(self, numTask, sumU, CF, CP, numCore=1, dag_size_range=(3, 6), edge_prob=0.4):
+    def __init__(self, numTask, sumU, CF, CP, numCore=1, dag_size_range=(3, 6), edge_prob=0.4, internal_subtask_enable=False, internal_subtask_size_range=(5, 10), internal_edge_prob=0.3, internal_depth_ratio=0.5):
         MCTaskSet.__init__(self)
         # 高关键度任务的个数
         number_HItasks = (int)(numTask * CP)
@@ -538,42 +538,135 @@ class Drs_gengerate(MCTaskSet):
             self.add(T, T.cri)
         self._build_task_dags(dag_size_range=dag_size_range, edge_prob=edge_prob)
 
-    # ===== 论文方案改造草稿（任务内 DAG 两层生成） =====
-    def build_task_internal_dag_draft(
-        self,
-        task: MCTask,
-        subtask_size_range=(5, 10),
-        edge_prob=0.3,
-        depth_ratio=0.5,
-    ) -> TaskInternalDAG:
+        if internal_subtask_enable:
+            self.generate_two_level_tasksets(
+                subtask_size_range=internal_subtask_size_range,
+                edge_prob=internal_edge_prob,
+                depth_ratio=internal_depth_ratio,
+            )
+
+    # ===== 论文方案改造（任务内 DAG 两层生成） =====
+    def _add_internal_edge(self, dag: TaskInternalDAG, src_id: int, dst_id: int):
+        if src_id == dst_id:
+            return
+        if dst_id in dag.nodes[src_id].successors:
+            return
+        dag.nodes[src_id].successors.add(dst_id)
+        dag.nodes[dst_id].predecessors.add(src_id)
+
+    def _build_internal_levels(self, node_count: int, depth_limit: int):
+        """为内部节点分配层级，层级越大表示越靠后。"""
+        levels = [0] * node_count
+        if node_count == 1:
+            return levels
+        max_level = max(1, depth_limit - 1)
+        levels[0] = 0
+        levels[-1] = max_level
+        for idx in range(1, node_count - 1):
+            levels[idx] = random.randint(0, max_level)
+        return levels
+
+    def _ensure_internal_weak_connected(self, dag: TaskInternalDAG, levels):
+        """若内部图非弱连通，通过补边将连通分量串联。"""
+        node_ids = list(dag.nodes.keys())
+        visited = set()
+        components = []
+
+        for node_id in node_ids:
+            if node_id in visited:
+                continue
+            stack = [node_id]
+            comp = []
+            visited.add(node_id)
+            while stack:
+                current = stack.pop()
+                comp.append(current)
+                neighbors = dag.nodes[current].successors.union(dag.nodes[current].predecessors)
+                for nxt in neighbors:
+                    if nxt not in visited:
+                        visited.add(nxt)
+                        stack.append(nxt)
+            components.append(comp)
+
+        if len(components) <= 1:
+            return
+
+        components.sort(key=lambda comp: min((levels[n], n) for n in comp))
+        for idx in range(len(components) - 1):
+            left = components[idx]
+            right = components[idx + 1]
+            left_node = min(left, key=lambda n: (levels[n], n))
+            right_node = max(right, key=lambda n: (levels[n], n))
+            if (levels[left_node], left_node) <= (levels[right_node], right_node):
+                self._add_internal_edge(dag, left_node, right_node)
+            else:
+                self._add_internal_edge(dag, right_node, left_node)
+
+    def _calc_internal_longest_path_nodes(self, dag: TaskInternalDAG):
+        node_ids = sorted(dag.nodes.keys())
+        indegree = {node_id: len(dag.nodes[node_id].predecessors) for node_id in node_ids}
+        queue = [node_id for node_id in node_ids if indegree[node_id] == 0]
+        topo = []
+        while queue:
+            current = queue.pop(0)
+            topo.append(current)
+            for succ_id in dag.nodes[current].successors:
+                indegree[succ_id] -= 1
+                if indegree[succ_id] == 0:
+                    queue.append(succ_id)
+
+        if len(topo) != len(node_ids):
+            return 0
+
+        dp = {node_id: 1 for node_id in topo}
+        for node_id in topo:
+            for succ_id in dag.nodes[node_id].successors:
+                candidate = dp[node_id] + 1
+                if candidate > dp[succ_id]:
+                    dp[succ_id] = candidate
+        return max(dp.values()) if dp else 0
+
+    def build_task_internal_dag(self, task: MCTask, subtask_size_range=(5, 10), edge_prob=0.3, depth_ratio=0.5) -> TaskInternalDAG:
         """
-        草稿接口：
-        1) 随机生成任务内部 DAG 结构（节点数 5~10，边概率 p，深度上限 d）。
-        2) 强制弱连通。
-        3) 仅挂接数据结构，不改变当前主流程。
+        构建任务内部 DAG：
+        1) 节点数随机取 5~10；
+        2) 按概率 p 生成前向边；
+        3) 深度限制 d 与节点数成比例；
+        4) 若图非弱连通则补边连通。
         """
-        node_count = random.randint(subtask_size_range[0], subtask_size_range[1])
+        min_nodes, max_nodes = subtask_size_range
+        min_nodes = max(1, min_nodes)
+        max_nodes = max(min_nodes, max_nodes)
+        node_count = random.randint(min_nodes, max_nodes)
+
         depth_limit = max(2, int(ceil(node_count * depth_ratio)))
+        levels = self._build_internal_levels(node_count, depth_limit)
 
-        dag = TaskInternalDAG(
-            task_id=task.id,
-            max_depth_limit=depth_limit,
-            edge_prob=edge_prob,
-        )
-
+        dag = TaskInternalDAG(task_id=task.id, max_depth_limit=depth_limit, edge_prob=edge_prob)
         for node_id in range(node_count):
-            tag = f"T{task.id}_N{node_id}"
-            dag.nodes[node_id] = SubTaskNode(node_id=node_id, tag=tag, cri=task.cri)
+            dag.nodes[node_id] = SubTaskNode(node_id=node_id, tag=f"T{task.id}_N{node_id}", cri=task.cri)
+
+        for src_id in range(node_count):
+            for dst_id in range(src_id + 1, node_count):
+                if (levels[src_id], src_id) >= (levels[dst_id], dst_id):
+                    continue
+                if random.random() <= edge_prob:
+                    self._add_internal_edge(dag, src_id, dst_id)
+
+        self._ensure_internal_weak_connected(dag, levels)
+
+        dag.root_nodes = [node_id for node_id, node in dag.nodes.items() if len(node.predecessors) == 0]
+        dag.sink_nodes = [node_id for node_id, node in dag.nodes.items() if len(node.successors) == 0]
+        dag.longest_path_nodes = self._calc_internal_longest_path_nodes(dag)
 
         task.internal_dag = dag
         task.internal_node_count = node_count
         task.internal_depth_limit = depth_limit
         return dag
 
-    def allocate_internal_subtask_utilization_draft(self, task: MCTask):
+    def allocate_internal_subtask_utilization(self, task: MCTask):
         """
-        草稿接口：基于任务级 uLO/uHI，再次使用 drs 给任务内部子任务分配利用率。
-        注：当前仅提供占位逻辑，后续可按论文口径补齐约束。
+        基于任务级 uLO/uHI，再次使用 DRS 对任务内部子任务分配利用率并换算执行时间。
         """
         if task.internal_dag is None or len(task.internal_dag.nodes) == 0:
             return
@@ -583,7 +676,7 @@ class Drs_gengerate(MCTaskSet):
 
         u_lo_list = drs(n, task.uLO, [1.0] * n, None)
         if task.cri == 0:
-            u_hi_list = drs(n, task.uHI, [1.0] * n, None)
+            u_hi_list = drs(n, task.uHI, [1.0] * n, u_lo_list)
         else:
             u_hi_list = [0.0] * n
 
@@ -593,6 +686,35 @@ class Drs_gengerate(MCTaskSet):
             node.uHI = float(u_hi_list[idx])
             node.eLO = node.uLO * task.pLO
             node.eHI = node.uHI * task.pHI
+
+        # 更新 tag：标注 root/sink/inner
+        root_set = set(task.internal_dag.root_nodes)
+        sink_set = set(task.internal_dag.sink_nodes)
+        for node_id in node_ids:
+            role = "inner"
+            if node_id in root_set:
+                role = "root"
+            elif node_id in sink_set:
+                role = "sink"
+            task.internal_dag.nodes[node_id].tag = f"T{task.id}_{role}_N{node_id}"
+
+    def generate_two_level_tasksets(self, subtask_size_range=(5, 10), edge_prob=0.3, depth_ratio=0.5):
+        """执行两层生成流程：任务级已生成 -> 逐任务构建内部 DAG 并分配子任务执行时间。"""
+        for task in sorted(self.LO, key=lambda t: t.id):
+            self.build_task_internal_dag(
+                task,
+                subtask_size_range=subtask_size_range,
+                edge_prob=edge_prob,
+                depth_ratio=depth_ratio,
+            )
+            self.allocate_internal_subtask_utilization(task)
+
+    # 向后兼容：保留 draft 方法名
+    def build_task_internal_dag_draft(self, task: MCTask, subtask_size_range=(5, 10), edge_prob=0.3, depth_ratio=0.5) -> TaskInternalDAG:
+        return self.build_task_internal_dag(task, subtask_size_range, edge_prob, depth_ratio)
+
+    def allocate_internal_subtask_utilization_draft(self, task: MCTask):
+        return self.allocate_internal_subtask_utilization(task)
 
     def _add_edge(self, src_task, dst_task):
         src_task.successors.add(dst_task.id)
