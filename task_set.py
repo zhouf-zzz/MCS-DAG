@@ -502,7 +502,7 @@ class MCTaskSet(object):
 
 class Drs_gengerate(MCTaskSet):
 
-    def __init__(self, numTask, sumU, CF, CP, numCore=1, dag_size_range=(3, 6), edge_prob=0.4, internal_subtask_enable=False, internal_subtask_size_range=(5, 10), internal_edge_prob=0.3, internal_depth_ratio=0.5):
+    def __init__(self, numTask, sumU, CF, CP, numCore=1, dag_size_range=(3, 6), edge_prob=0.4, internal_subtask_enable=True, internal_subtask_size_range=(5, 8), internal_edge_prob=0.3, internal_depth_ratio=0.5):
         MCTaskSet.__init__(self)
         # 高关键度任务的个数
         number_HItasks = (int)(numTask * CP)
@@ -626,13 +626,14 @@ class Drs_gengerate(MCTaskSet):
                     dp[succ_id] = candidate
         return max(dp.values()) if dp else 0
 
-    def build_task_internal_dag(self, task: MCTask, subtask_size_range=(5, 10), edge_prob=0.3, depth_ratio=0.5) -> TaskInternalDAG:
+    def build_task_internal_dag(self, task: MCTask, subtask_size_range=(5, 8), edge_prob=0.3, depth_ratio=0.5) -> TaskInternalDAG:
         """
         构建任务内部 DAG：
-        1) 节点数随机取 5~10；
+        1) 节点数随机取 5~8；
         2) 按概率 p 生成前向边；
         3) 深度限制 d 与节点数成比例；
-        4) 若图非弱连通则补边连通。
+        4) 强制单根单汇；
+        5) 若图非弱连通则补边连通。
         """
         min_nodes, max_nodes = subtask_size_range
         min_nodes = max(1, min_nodes)
@@ -646,10 +647,15 @@ class Drs_gengerate(MCTaskSet):
         for node_id in range(node_count):
             dag.nodes[node_id] = SubTaskNode(node_id=node_id, tag=f"T{task.id}_N{node_id}", cri=task.cri)
 
-        for src_id in range(node_count):
-            for dst_id in range(src_id + 1, node_count):
-                if (levels[src_id], src_id) >= (levels[dst_id], dst_id):
-                    continue
+        # 先构造一条覆盖所有节点的主链，确保仅有 1 个根节点和 1 个汇点
+        ordered_ids = sorted(range(node_count), key=lambda nid: (levels[nid], nid))
+        for idx in range(len(ordered_ids) - 1):
+            self._add_internal_edge(dag, ordered_ids[idx], ordered_ids[idx + 1])
+
+        # 再按概率添加前向边，保持 DAG 且不改变单根单汇性质
+        order_pos = {node_id: idx for idx, node_id in enumerate(ordered_ids)}
+        for src_id in ordered_ids:
+            for dst_id in ordered_ids[order_pos[src_id] + 2:]:
                 if random.random() <= edge_prob:
                     self._add_internal_edge(dag, src_id, dst_id)
 
@@ -698,7 +704,7 @@ class Drs_gengerate(MCTaskSet):
                 role = "sink"
             task.internal_dag.nodes[node_id].tag = f"T{task.id}_{role}_N{node_id}"
 
-    def generate_two_level_tasksets(self, subtask_size_range=(5, 10), edge_prob=0.3, depth_ratio=0.5):
+    def generate_two_level_tasksets(self, subtask_size_range=(5, 8), edge_prob=0.3, depth_ratio=0.5):
         """执行两层生成流程：任务级已生成 -> 逐任务构建内部 DAG 并分配子任务执行时间。"""
         for task in sorted(self.LO, key=lambda t: t.id):
             self.build_task_internal_dag(
@@ -710,7 +716,7 @@ class Drs_gengerate(MCTaskSet):
             self.allocate_internal_subtask_utilization(task)
 
     # 向后兼容：保留 draft 方法名
-    def build_task_internal_dag_draft(self, task: MCTask, subtask_size_range=(5, 10), edge_prob=0.3, depth_ratio=0.5) -> TaskInternalDAG:
+    def build_task_internal_dag_draft(self, task: MCTask, subtask_size_range=(5, 8), edge_prob=0.3, depth_ratio=0.5) -> TaskInternalDAG:
         return self.build_task_internal_dag(task, subtask_size_range, edge_prob, depth_ratio)
 
     def allocate_internal_subtask_utilization_draft(self, task: MCTask):

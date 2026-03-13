@@ -32,7 +32,7 @@ def _is_mapping_valid(mapping_list, ts):
 
 
 def validate_mapping_reliability(
-    task_number=20,
+    task_number=10,
     node_number=4,
     cycles=100,
     uti_start=0.2,
@@ -174,7 +174,7 @@ def plot_validation_summary(summary, out_dir="result", prefix="mapping_validatio
 
 
 def run_validation_with_plots(
-    task_number=20,
+    task_number=10,
     node_number=4,
     cycles=100,
     uti_start=0.2,
