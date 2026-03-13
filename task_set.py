@@ -512,20 +512,45 @@ class Drs_gengerate(MCTaskSet):
         """
         将任务划分为多个 DAG，并满足约束：
         1) 每个任务为单核任务（在 MCTask 中固定为 node_number=1）。
-        2) 一个 DAG 中，若目标任务为 HI 关键度，则其所有前置任务也必须为 HI 关键度。
+        2) 每个 DAG 仅有一个根节点（入度为 0）和一个汇点（出度为 0）。
+        3) 每个 DAG 的最长路径（按任务数计）不少于 3。
+        4) 若目标任务为 HI 关键度，则其所有前置任务也必须为 HI 关键度。
         """
         tasks = sorted(list(self.LO), key=lambda task: task.id)
         if not tasks:
             return
 
         min_size, max_size = dag_size_range
-        min_size = max(1, min_size)
+        min_size = max(3, min_size)
         max_size = max(min_size, max_size)
+
+        if len(tasks) < 3:
+            for task in tasks:
+                task.dag_id = 0
+                task.predecessors = set()
+                task.successors = set()
+            return
+
+        dag_sizes = []
+        remaining = len(tasks)
+        while remaining > 0:
+            if remaining <= max_size and remaining >= min_size:
+                dag_sizes.append(remaining)
+                break
+
+            candidate_min = min_size
+            candidate_max = min(max_size, remaining - min_size)
+            if candidate_max < candidate_min:
+                dag_sizes[-1] += remaining
+                break
+
+            dag_size = random.randint(candidate_min, candidate_max)
+            dag_sizes.append(dag_size)
+            remaining -= dag_size
 
         start = 0
         dag_id = 0
-        while start < len(tasks):
-            dag_size = random.randint(min_size, max_size)
+        for dag_size in dag_sizes:
             dag_tasks = tasks[start:start + dag_size]
             if not dag_tasks:
                 break
@@ -535,11 +560,27 @@ class Drs_gengerate(MCTaskSet):
                 task.predecessors = set()
                 task.successors = set()
 
-            for dst_idx in range(1, len(dag_tasks)):
-                dst_task = dag_tasks[dst_idx]
-                for src_idx in range(dst_idx):
-                    src_task = dag_tasks[src_idx]
+            # 先构造一条覆盖全部节点的主链，保证：
+            # - 单根单汇；
+            # - 最长路径至少为 dag_size（因此 >=3）。
+            hi_tasks = [task for task in dag_tasks if task.cri == 0]
+            lo_tasks = [task for task in dag_tasks if task.cri != 0]
+            random.shuffle(hi_tasks)
+            random.shuffle(lo_tasks)
+            ordered_tasks = hi_tasks + lo_tasks
+
+            for idx in range(len(ordered_tasks) - 1):
+                self._add_edge(ordered_tasks[idx], ordered_tasks[idx + 1])
+
+            # 在不破坏单根单汇的前提下，随机添加部分前向边。
+            # 使用 ordered_tasks 的前向方向可保持无环，且避免 LO->HI 约束冲突。
+            for src_idx in range(len(ordered_tasks) - 1):
+                src_task = ordered_tasks[src_idx]
+                for dst_idx in range(src_idx + 2, len(ordered_tasks)):
                     if random.random() > edge_prob:
+                        continue
+                    dst_task = ordered_tasks[dst_idx]
+                    if dst_task.id in src_task.successors:
                         continue
                     # HI 任务的前置任务必须是 HI 任务
                     if dst_task.cri == 0 and src_task.cri != 0:
