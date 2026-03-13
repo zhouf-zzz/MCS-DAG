@@ -1,8 +1,37 @@
 import random
+from dataclasses import dataclass, field
+from typing import List, Set, Dict, Optional
 from math import *
 from utilization_generate import drs
 minDelta = 0
 switch_con = 0.1
+
+
+@dataclass
+class SubTaskNode:
+    """任务内部 DAG 节点（草稿数据结构）。"""
+    node_id: int
+    tag: str
+    cri: int
+    eLO: float = 0.0
+    eHI: float = 0.0
+    uLO: float = 0.0
+    uHI: float = 0.0
+    predecessors: Set[int] = field(default_factory=set)
+    successors: Set[int] = field(default_factory=set)
+
+
+@dataclass
+class TaskInternalDAG:
+    """单个任务内部 DAG（草稿数据结构）。"""
+    task_id: int
+    nodes: Dict[int, SubTaskNode] = field(default_factory=dict)
+    root_nodes: List[int] = field(default_factory=list)
+    sink_nodes: List[int] = field(default_factory=list)
+    longest_path_nodes: int = 0
+    max_depth_limit: int = 0
+    edge_prob: float = 0.0
+
 class MCTask(object):
     """object for a Mixed-criticality task  """
 
@@ -35,10 +64,15 @@ class MCTask(object):
                 self.slack = self.dLO - self.eLO
         # 单任务默认映射到单核，保持与映射和实验脚本中的属性一致
         self.node_number = 1
-        # DAG 相关属性
+        # DAG 相关属性（全局任务图）
         self.dag_id = -1
         self.predecessors = set()
         self.successors = set()
+
+        # 任务内部 DAG 属性（论文方案草稿）
+        self.internal_dag: Optional[TaskInternalDAG] = None
+        self.internal_node_count = 0
+        self.internal_depth_limit = 0
 
 
     def info(self):
@@ -503,6 +537,62 @@ class Drs_gengerate(MCTaskSet):
                     T.io_list.append(io)
             self.add(T, T.cri)
         self._build_task_dags(dag_size_range=dag_size_range, edge_prob=edge_prob)
+
+    # ===== 论文方案改造草稿（任务内 DAG 两层生成） =====
+    def build_task_internal_dag_draft(
+        self,
+        task: MCTask,
+        subtask_size_range=(5, 10),
+        edge_prob=0.3,
+        depth_ratio=0.5,
+    ) -> TaskInternalDAG:
+        """
+        草稿接口：
+        1) 随机生成任务内部 DAG 结构（节点数 5~10，边概率 p，深度上限 d）。
+        2) 强制弱连通。
+        3) 仅挂接数据结构，不改变当前主流程。
+        """
+        node_count = random.randint(subtask_size_range[0], subtask_size_range[1])
+        depth_limit = max(2, int(ceil(node_count * depth_ratio)))
+
+        dag = TaskInternalDAG(
+            task_id=task.id,
+            max_depth_limit=depth_limit,
+            edge_prob=edge_prob,
+        )
+
+        for node_id in range(node_count):
+            tag = f"T{task.id}_N{node_id}"
+            dag.nodes[node_id] = SubTaskNode(node_id=node_id, tag=tag, cri=task.cri)
+
+        task.internal_dag = dag
+        task.internal_node_count = node_count
+        task.internal_depth_limit = depth_limit
+        return dag
+
+    def allocate_internal_subtask_utilization_draft(self, task: MCTask):
+        """
+        草稿接口：基于任务级 uLO/uHI，再次使用 drs 给任务内部子任务分配利用率。
+        注：当前仅提供占位逻辑，后续可按论文口径补齐约束。
+        """
+        if task.internal_dag is None or len(task.internal_dag.nodes) == 0:
+            return
+
+        node_ids = sorted(task.internal_dag.nodes.keys())
+        n = len(node_ids)
+
+        u_lo_list = drs(n, task.uLO, [1.0] * n, None)
+        if task.cri == 0:
+            u_hi_list = drs(n, task.uHI, [1.0] * n, None)
+        else:
+            u_hi_list = [0.0] * n
+
+        for idx, node_id in enumerate(node_ids):
+            node = task.internal_dag.nodes[node_id]
+            node.uLO = float(u_lo_list[idx])
+            node.uHI = float(u_hi_list[idx])
+            node.eLO = node.uLO * task.pLO
+            node.eHI = node.uHI * task.pHI
 
     def _add_edge(self, src_task, dst_task):
         src_task.successors.add(dst_task.id)
