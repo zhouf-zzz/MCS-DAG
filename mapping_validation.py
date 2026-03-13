@@ -3,6 +3,17 @@ import time
 from mapping import _all_mapped_dags_deadline_ok
 
 
+def _check_runtime_dependencies():
+    """提前检查运行时依赖并返回缺失项，避免在深层 import 处报错。"""
+    missing = []
+    for module_name in ("numpy", "scipy", "matplotlib"):
+        try:
+            __import__(module_name)
+        except ModuleNotFoundError:
+            missing.append(module_name)
+    return missing
+
+
 def _reset_tasks(ts):
     for task in ts.HI.union(ts.LO):
         task.reset()
@@ -21,7 +32,7 @@ def _is_mapping_valid(mapping_list, ts):
 
 
 def validate_mapping_reliability(
-    task_number=20,
+    task_number=10,
     node_number=4,
     cycles=100,
     uti_start=0.2,
@@ -31,16 +42,16 @@ def validate_mapping_reliability(
     """
     使用已有映射算法构建“对照式验证”：
     - 主算法: BF_DIP
-    - 对照算法: FF_DP, WF_DU
+    - 对照算法: BF_DP, WF_DU
 
     输出每个利用率下三种算法的可调度率与运行时间。
     """
     from task_set import Drs_gengerate
-    from mapping import FF_DP, WF_DU, BF_DIP
+    from mapping import BF_DP, WF_DU, BF_DIP
 
     algorithms = {
         "BF_DIP": BF_DIP,
-        "FF_DP": FF_DP,
+        "BF_DP": BF_DP,
         "WF_DU": WF_DU,
     }
 
@@ -120,12 +131,12 @@ def plot_validation_summary(summary, out_dir="result", prefix="mapping_validatio
     algos = summary["algorithms"]
     colors = {
         "BF_DIP": "royalblue",
-        "FF_DP": "seagreen",
+        "BF_DP": "seagreen",
         "WF_DU": "darkorange",
     }
     markers = {
         "BF_DIP": "o",
-        "FF_DP": "s",
+        "BF_DP": "s",
         "WF_DU": "^",
     }
 
@@ -163,7 +174,7 @@ def plot_validation_summary(summary, out_dir="result", prefix="mapping_validatio
 
 
 def run_validation_with_plots(
-    task_number=20,
+    task_number=10,
     node_number=4,
     cycles=100,
     uti_start=0.2,
@@ -185,6 +196,16 @@ def run_validation_with_plots(
 
 
 if __name__ == "__main__":
+    missing_modules = _check_runtime_dependencies()
+    if missing_modules:
+        raise SystemExit(
+            "缺少运行依赖："
+            + ", ".join(missing_modules)
+            + "。请先执行 `python3 -m pip install "
+            + " ".join(missing_modules)
+            + "` 后重试。"
+        )
+
     summary, figure_paths = run_validation_with_plots()
     print("\nSaved figures:")
     for metric, paths in figure_paths.items():

@@ -1,8 +1,37 @@
 import random
+from dataclasses import dataclass, field
+from typing import List, Set, Dict, Optional
 from math import *
 from utilization_generate import drs
 minDelta = 0
 switch_con = 0.1
+
+
+@dataclass
+class SubTaskNode:
+    """任务内部 DAG 节点（草稿数据结构）。"""
+    node_id: int
+    tag: str
+    cri: int
+    eLO: float = 0.0
+    eHI: float = 0.0
+    uLO: float = 0.0
+    uHI: float = 0.0
+    predecessors: Set[int] = field(default_factory=set)
+    successors: Set[int] = field(default_factory=set)
+
+
+@dataclass
+class TaskInternalDAG:
+    """单个任务内部 DAG（草稿数据结构）。"""
+    task_id: int
+    nodes: Dict[int, SubTaskNode] = field(default_factory=dict)
+    root_nodes: List[int] = field(default_factory=list)
+    sink_nodes: List[int] = field(default_factory=list)
+    longest_path_nodes: int = 0
+    max_depth_limit: int = 0
+    edge_prob: float = 0.0
+
 class MCTask(object):
     """object for a Mixed-criticality task  """
 
@@ -35,10 +64,15 @@ class MCTask(object):
                 self.slack = self.dLO - self.eLO
         # 单任务默认映射到单核，保持与映射和实验脚本中的属性一致
         self.node_number = 1
-        # DAG 相关属性
+        # DAG 相关属性（全局任务图）
         self.dag_id = -1
         self.predecessors = set()
         self.successors = set()
+
+        # 任务内部 DAG 属性（论文方案草稿）
+        self.internal_dag: Optional[TaskInternalDAG] = None
+        self.internal_node_count = 0
+        self.internal_depth_limit = 0
 
 
     def info(self):
@@ -468,7 +502,7 @@ class MCTaskSet(object):
 
 class Drs_gengerate(MCTaskSet):
 
-    def __init__(self, numTask, sumU, CF, CP, numCore=1, dag_size_range=(3, 6), edge_prob=0.4):
+    def __init__(self, numTask, sumU, CF, CP, numCore=1, dag_size_range=(3, 6), edge_prob=0.4, internal_subtask_enable=True, internal_subtask_size_range=(5, 8), internal_edge_prob=0.3, internal_depth_ratio=0.5):
         MCTaskSet.__init__(self)
         # 高关键度任务的个数
         number_HItasks = (int)(numTask * CP)
@@ -504,6 +538,190 @@ class Drs_gengerate(MCTaskSet):
             self.add(T, T.cri)
         self._build_task_dags(dag_size_range=dag_size_range, edge_prob=edge_prob)
 
+        if internal_subtask_enable:
+            self.generate_two_level_tasksets(
+                subtask_size_range=internal_subtask_size_range,
+                edge_prob=internal_edge_prob,
+                depth_ratio=internal_depth_ratio,
+            )
+
+    # ===== 论文方案改造（任务内 DAG 两层生成） =====
+    def _add_internal_edge(self, dag: TaskInternalDAG, src_id: int, dst_id: int):
+        if src_id == dst_id:
+            return
+        if dst_id in dag.nodes[src_id].successors:
+            return
+        dag.nodes[src_id].successors.add(dst_id)
+        dag.nodes[dst_id].predecessors.add(src_id)
+
+    def _build_internal_levels(self, node_count: int, depth_limit: int):
+        """为内部节点分配层级，层级越大表示越靠后。"""
+        levels = [0] * node_count
+        if node_count == 1:
+            return levels
+        max_level = max(1, depth_limit - 1)
+        levels[0] = 0
+        levels[-1] = max_level
+        for idx in range(1, node_count - 1):
+            levels[idx] = random.randint(0, max_level)
+        return levels
+
+    def _ensure_internal_weak_connected(self, dag: TaskInternalDAG, levels):
+        """若内部图非弱连通，通过补边将连通分量串联。"""
+        node_ids = list(dag.nodes.keys())
+        visited = set()
+        components = []
+
+        for node_id in node_ids:
+            if node_id in visited:
+                continue
+            stack = [node_id]
+            comp = []
+            visited.add(node_id)
+            while stack:
+                current = stack.pop()
+                comp.append(current)
+                neighbors = dag.nodes[current].successors.union(dag.nodes[current].predecessors)
+                for nxt in neighbors:
+                    if nxt not in visited:
+                        visited.add(nxt)
+                        stack.append(nxt)
+            components.append(comp)
+
+        if len(components) <= 1:
+            return
+
+        components.sort(key=lambda comp: min((levels[n], n) for n in comp))
+        for idx in range(len(components) - 1):
+            left = components[idx]
+            right = components[idx + 1]
+            left_node = min(left, key=lambda n: (levels[n], n))
+            right_node = max(right, key=lambda n: (levels[n], n))
+            if (levels[left_node], left_node) <= (levels[right_node], right_node):
+                self._add_internal_edge(dag, left_node, right_node)
+            else:
+                self._add_internal_edge(dag, right_node, left_node)
+
+    def _calc_internal_longest_path_nodes(self, dag: TaskInternalDAG):
+        node_ids = sorted(dag.nodes.keys())
+        indegree = {node_id: len(dag.nodes[node_id].predecessors) for node_id in node_ids}
+        queue = [node_id for node_id in node_ids if indegree[node_id] == 0]
+        topo = []
+        while queue:
+            current = queue.pop(0)
+            topo.append(current)
+            for succ_id in dag.nodes[current].successors:
+                indegree[succ_id] -= 1
+                if indegree[succ_id] == 0:
+                    queue.append(succ_id)
+
+        if len(topo) != len(node_ids):
+            return 0
+
+        dp = {node_id: 1 for node_id in topo}
+        for node_id in topo:
+            for succ_id in dag.nodes[node_id].successors:
+                candidate = dp[node_id] + 1
+                if candidate > dp[succ_id]:
+                    dp[succ_id] = candidate
+        return max(dp.values()) if dp else 0
+
+    def build_task_internal_dag(self, task: MCTask, subtask_size_range=(5, 8), edge_prob=0.3, depth_ratio=0.5) -> TaskInternalDAG:
+        """
+        构建任务内部 DAG：
+        1) 节点数随机取 5~8；
+        2) 按概率 p 生成前向边；
+        3) 深度限制 d 与节点数成比例；
+        4) 强制单根单汇；
+        5) 若图非弱连通则补边连通。
+        """
+        min_nodes, max_nodes = subtask_size_range
+        min_nodes = max(1, min_nodes)
+        max_nodes = max(min_nodes, max_nodes)
+        node_count = random.randint(min_nodes, max_nodes)
+
+        depth_limit = max(2, int(ceil(node_count * depth_ratio)))
+        levels = self._build_internal_levels(node_count, depth_limit)
+
+        dag = TaskInternalDAG(task_id=task.id, max_depth_limit=depth_limit, edge_prob=edge_prob)
+        for node_id in range(node_count):
+            dag.nodes[node_id] = SubTaskNode(node_id=node_id, tag=f"T{task.id}_N{node_id}", cri=task.cri)
+
+        # 先构造一条覆盖所有节点的主链，确保仅有 1 个根节点和 1 个汇点
+        ordered_ids = sorted(range(node_count), key=lambda nid: (levels[nid], nid))
+        for idx in range(len(ordered_ids) - 1):
+            self._add_internal_edge(dag, ordered_ids[idx], ordered_ids[idx + 1])
+
+        # 再按概率添加前向边，保持 DAG 且不改变单根单汇性质
+        order_pos = {node_id: idx for idx, node_id in enumerate(ordered_ids)}
+        for src_id in ordered_ids:
+            for dst_id in ordered_ids[order_pos[src_id] + 2:]:
+                if random.random() <= edge_prob:
+                    self._add_internal_edge(dag, src_id, dst_id)
+
+        self._ensure_internal_weak_connected(dag, levels)
+
+        dag.root_nodes = [node_id for node_id, node in dag.nodes.items() if len(node.predecessors) == 0]
+        dag.sink_nodes = [node_id for node_id, node in dag.nodes.items() if len(node.successors) == 0]
+        dag.longest_path_nodes = self._calc_internal_longest_path_nodes(dag)
+
+        task.internal_dag = dag
+        task.internal_node_count = node_count
+        task.internal_depth_limit = depth_limit
+        return dag
+
+    def allocate_internal_subtask_utilization(self, task: MCTask):
+        """
+        基于任务级 uLO/uHI，再次使用 DRS 对任务内部子任务分配利用率并换算执行时间。
+        """
+        if task.internal_dag is None or len(task.internal_dag.nodes) == 0:
+            return
+
+        node_ids = sorted(task.internal_dag.nodes.keys())
+        n = len(node_ids)
+
+        u_lo_list = drs(n, task.uLO, [1.0] * n, None)
+        if task.cri == 0:
+            u_hi_list = drs(n, task.uHI, [1.0] * n, u_lo_list)
+        else:
+            u_hi_list = [0.0] * n
+
+        for idx, node_id in enumerate(node_ids):
+            node = task.internal_dag.nodes[node_id]
+            node.uLO = float(u_lo_list[idx])
+            node.uHI = float(u_hi_list[idx])
+            node.eLO = node.uLO * task.pLO
+            node.eHI = node.uHI * task.pHI
+
+        # 更新 tag：标注 root/sink/inner
+        root_set = set(task.internal_dag.root_nodes)
+        sink_set = set(task.internal_dag.sink_nodes)
+        for node_id in node_ids:
+            role = "inner"
+            if node_id in root_set:
+                role = "root"
+            elif node_id in sink_set:
+                role = "sink"
+            task.internal_dag.nodes[node_id].tag = f"T{task.id}_{role}_N{node_id}"
+
+    def generate_two_level_tasksets(self, subtask_size_range=(5, 8), edge_prob=0.3, depth_ratio=0.5):
+        """执行两层生成流程：任务级已生成 -> 逐任务构建内部 DAG 并分配子任务执行时间。"""
+        for task in sorted(self.LO, key=lambda t: t.id):
+            self.build_task_internal_dag(
+                task,
+                subtask_size_range=subtask_size_range,
+                edge_prob=edge_prob,
+                depth_ratio=depth_ratio,
+            )
+            self.allocate_internal_subtask_utilization(task)
+
+    # 向后兼容：保留 draft 方法名
+    def build_task_internal_dag_draft(self, task: MCTask, subtask_size_range=(5, 8), edge_prob=0.3, depth_ratio=0.5) -> TaskInternalDAG:
+        return self.build_task_internal_dag(task, subtask_size_range, edge_prob, depth_ratio)
+
+    def allocate_internal_subtask_utilization_draft(self, task: MCTask):
+        return self.allocate_internal_subtask_utilization(task)
+
     def _add_edge(self, src_task, dst_task):
         src_task.successors.add(dst_task.id)
         dst_task.predecessors.add(src_task.id)
@@ -512,20 +730,45 @@ class Drs_gengerate(MCTaskSet):
         """
         将任务划分为多个 DAG，并满足约束：
         1) 每个任务为单核任务（在 MCTask 中固定为 node_number=1）。
-        2) 一个 DAG 中，若目标任务为 HI 关键度，则其所有前置任务也必须为 HI 关键度。
+        2) 每个 DAG 仅有一个根节点（入度为 0）和一个汇点（出度为 0）。
+        3) 每个 DAG 的最长路径（按任务数计）不少于 3。
+        4) 若目标任务为 HI 关键度，则其所有前置任务也必须为 HI 关键度。
         """
         tasks = sorted(list(self.LO), key=lambda task: task.id)
         if not tasks:
             return
 
         min_size, max_size = dag_size_range
-        min_size = max(1, min_size)
+        min_size = max(3, min_size)
         max_size = max(min_size, max_size)
+
+        if len(tasks) < 3:
+            for task in tasks:
+                task.dag_id = 0
+                task.predecessors = set()
+                task.successors = set()
+            return
+
+        dag_sizes = []
+        remaining = len(tasks)
+        while remaining > 0:
+            if remaining <= max_size and remaining >= min_size:
+                dag_sizes.append(remaining)
+                break
+
+            candidate_min = min_size
+            candidate_max = min(max_size, remaining - min_size)
+            if candidate_max < candidate_min:
+                dag_sizes[-1] += remaining
+                break
+
+            dag_size = random.randint(candidate_min, candidate_max)
+            dag_sizes.append(dag_size)
+            remaining -= dag_size
 
         start = 0
         dag_id = 0
-        while start < len(tasks):
-            dag_size = random.randint(min_size, max_size)
+        for dag_size in dag_sizes:
             dag_tasks = tasks[start:start + dag_size]
             if not dag_tasks:
                 break
@@ -535,11 +778,27 @@ class Drs_gengerate(MCTaskSet):
                 task.predecessors = set()
                 task.successors = set()
 
-            for dst_idx in range(1, len(dag_tasks)):
-                dst_task = dag_tasks[dst_idx]
-                for src_idx in range(dst_idx):
-                    src_task = dag_tasks[src_idx]
+            # 先构造一条覆盖全部节点的主链，保证：
+            # - 单根单汇；
+            # - 最长路径至少为 dag_size（因此 >=3）。
+            hi_tasks = [task for task in dag_tasks if task.cri == 0]
+            lo_tasks = [task for task in dag_tasks if task.cri != 0]
+            random.shuffle(hi_tasks)
+            random.shuffle(lo_tasks)
+            ordered_tasks = hi_tasks + lo_tasks
+
+            for idx in range(len(ordered_tasks) - 1):
+                self._add_edge(ordered_tasks[idx], ordered_tasks[idx + 1])
+
+            # 在不破坏单根单汇的前提下，随机添加部分前向边。
+            # 使用 ordered_tasks 的前向方向可保持无环，且避免 LO->HI 约束冲突。
+            for src_idx in range(len(ordered_tasks) - 1):
+                src_task = ordered_tasks[src_idx]
+                for dst_idx in range(src_idx + 2, len(ordered_tasks)):
                     if random.random() > edge_prob:
+                        continue
+                    dst_task = ordered_tasks[dst_idx]
+                    if dst_task.id in src_task.successors:
                         continue
                     # HI 任务的前置任务必须是 HI 任务
                     if dst_task.cri == 0 and src_task.cri != 0:
