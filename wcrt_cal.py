@@ -326,10 +326,13 @@ def choose_job_new(job_list):
         """
         return [sorted(job_list, key=lambda task: task.pri, reverse=False)[0]]
 
-def _mark_job_release(job, release_time):
+def _mark_job_release(job, release_time, local_task_ids=None):
         """为作业实例补充释放时刻和DAG前置约束信息。"""
         job.release_time = release_time
-        job.predecessors = set(getattr(job, 'predecessors', set()))
+        predecessors = set(getattr(job, 'predecessors', set()))
+        if local_task_ids is not None:
+                predecessors = predecessors.intersection(local_task_ids)
+        job.predecessors = predecessors
         return job
 
 def _dag_job_runnable(job, current_time, completed_jobs):
@@ -485,19 +488,20 @@ def amc_rtb_wcrt(task_set, T, tasks):
         hp = tasks - set([T])
         hpH = tasks.intersection(task_set.HI) - set([T])
         hpL = tasks.intersection(task_set.LO) - task_set.HI - set([T])
+        local_task_ids = {task.id for task in tasks}
 
         rLO = T.eLO
         while rLO <= T.dLO:
                 current_time = 0
-                current_job = _mark_job_release(copy.deepcopy(T), 0)
-                job_list = [_mark_job_release(copy.deepcopy(task), 0) for task in hp]
+                current_job = _mark_job_release(copy.deepcopy(T), 0, local_task_ids)
+                job_list = [_mark_job_release(copy.deepcopy(task), 0, local_task_ids) for task in hp]
                 completed_jobs = set()
 
                 while current_job.eLO != 0:
                         if current_time != 0:
                                 for task in hp:
                                         if (current_time % task.pLO == 0) and current_time <= rLO:
-                                                job_list.append(_mark_job_release(copy.deepcopy(task), current_time))
+                                                job_list.append(_mark_job_release(copy.deepcopy(task), current_time, local_task_ids))
 
                         last_exe_time = unit_time
                         while last_exe_time > 0:
@@ -550,17 +554,17 @@ def amc_rtb_wcrt(task_set, T, tasks):
         rHI = T.eHI
         while rHI <= T.dHI:
                 current_time = 0
-                current_job = _mark_job_release(copy.deepcopy(T), 0)
-                job_list = [_mark_job_release(copy.deepcopy(task), 0) for task in hp]
+                current_job = _mark_job_release(copy.deepcopy(T), 0, local_task_ids)
+                job_list = [_mark_job_release(copy.deepcopy(task), 0, local_task_ids) for task in hp]
                 completed_jobs = set()
                 while current_job.eHI != 0:
                         if current_time !=0:
                                 for task in hpL:
                                         if (current_time % task.pLO == 0) and current_time <= rLO:
-                                                job_list.append(_mark_job_release(copy.deepcopy(task), current_time))
+                                                job_list.append(_mark_job_release(copy.deepcopy(task), current_time, local_task_ids))
                                 for task in hpH:
                                         if (current_time % task.pHI == 0) and current_time <= rHI:
-                                                job_list.append(_mark_job_release(copy.deepcopy(task), current_time))
+                                                job_list.append(_mark_job_release(copy.deepcopy(task), current_time, local_task_ids))
                         last_exe_time = unit_time
                         while last_exe_time > 0:
                                 runnable_jobs = _get_runnable_jobs(job_list, current_time, completed_jobs)
