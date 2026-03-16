@@ -38,6 +38,7 @@ def validate_mapping_reliability(
     uti_start=0.2,
     uti_step=0.1,
     uti_points=6,
+    disable_internal_subtask=True,
 ):
     """
     使用已有映射算法构建“对照式验证”：
@@ -69,7 +70,14 @@ def validate_mapping_reliability(
         system_uti = uti_start + uti_step * j
         uti_list.append(system_uti)
         for _ in range(cycles):
-            ts = Drs_gengerate(task_number, system_uti * node_number, 2, 0.5, node_number)
+            ts = Drs_gengerate(
+                task_number,
+                system_uti * node_number,
+                2,
+                0.5,
+                node_number,
+                internal_subtask_enable=not disable_internal_subtask,
+            )
             task_set = ts.HI.union(ts.LO)
             ts.priority_assignment_DM_HI(task_set, 0)
 
@@ -97,6 +105,7 @@ def validate_mapping_reliability(
             "uti_start": uti_start,
             "uti_step": uti_step,
             "uti_points": uti_points,
+            "disable_internal_subtask": disable_internal_subtask,
         },
     }
 
@@ -181,6 +190,7 @@ def run_validation_with_plots(
     uti_step=0.1,
     uti_points=6,
     out_dir="result",
+    disable_internal_subtask=True,
 ):
     summary = validate_mapping_reliability(
         task_number=task_number,
@@ -189,6 +199,7 @@ def run_validation_with_plots(
         uti_start=uti_start,
         uti_step=uti_step,
         uti_points=uti_points,
+        disable_internal_subtask=disable_internal_subtask,
     )
     print_validation_report(summary)
     figure_paths = plot_validation_summary(summary, out_dir=out_dir)
