@@ -6,7 +6,7 @@ from mapping import _all_mapped_dags_deadline_ok
 def _check_runtime_dependencies():
     """提前检查运行时依赖并返回缺失项，避免在深层 import 处报错。"""
     missing = []
-    for module_name in ("numpy", "scipy", "matplotlib"):
+    for module_name in ("numpy", "scipy", "matplotlib", "tqdm"):
         try:
             __import__(module_name)
         except ModuleNotFoundError:
@@ -38,7 +38,9 @@ def validate_mapping_reliability(
     uti_start=0.2,
     uti_step=0.1,
     uti_points=6,
-    disable_internal_subtask=True,
+    disable_internal_subtask=False,
+    show_progress=True,
+    progress_interval=0,
 ):
     """
     使用已有映射算法构建“对照式验证”：
@@ -69,7 +71,20 @@ def validate_mapping_reliability(
     for j in range(uti_points):
         system_uti = uti_start + uti_step * j
         uti_list.append(system_uti)
-        for _ in range(cycles):
+        cycle_range = range(cycles)
+        if show_progress:
+            from tqdm import tqdm
+
+            tqdm_kwargs = {
+                "desc": f"U={system_uti:.2f} ({j + 1}/{uti_points})",
+                "unit": "items",
+                "ncols": 100,
+            }
+            if progress_interval > 0:
+                tqdm_kwargs["miniters"] = progress_interval
+            cycle_range = tqdm(cycle_range, **tqdm_kwargs)
+
+        for cycle_idx in cycle_range:
             ts = Drs_gengerate(
                 task_number,
                 system_uti * node_number,
@@ -95,6 +110,7 @@ def validate_mapping_reliability(
 
                 _reset_tasks(ts)
 
+
     summary = {
         "utilization": uti_list,
         "algorithms": {},
@@ -106,6 +122,8 @@ def validate_mapping_reliability(
             "uti_step": uti_step,
             "uti_points": uti_points,
             "disable_internal_subtask": disable_internal_subtask,
+            "show_progress": show_progress,
+            "progress_interval": progress_interval,
         },
     }
 
@@ -190,7 +208,9 @@ def run_validation_with_plots(
     uti_step=0.1,
     uti_points=6,
     out_dir="result",
-    disable_internal_subtask=True,
+    disable_internal_subtask=False,
+    show_progress=True,
+    progress_interval=0,
 ):
     summary = validate_mapping_reliability(
         task_number=task_number,
@@ -200,6 +220,8 @@ def run_validation_with_plots(
         uti_step=uti_step,
         uti_points=uti_points,
         disable_internal_subtask=disable_internal_subtask,
+        show_progress=show_progress,
+        progress_interval=progress_interval,
     )
     print_validation_report(summary)
     figure_paths = plot_validation_summary(summary, out_dir=out_dir)
