@@ -1,6 +1,6 @@
 import os
 import time
-from mapping import _all_mapped_dags_deadline_ok
+from mapping import _all_mapped_dags_deadline_ok, _expected_unit_keys
 
 
 def _check_runtime_dependencies():
@@ -22,11 +22,15 @@ def _reset_tasks(ts):
 def _is_mapping_valid(mapping_list, ts):
     if mapping_list is False:
         return False
-    task_ids = {task.id for task in ts.HI.union(ts.LO)}
-    mapped_ids = set()
+    expected_units = _expected_unit_keys(ts.HI.union(ts.LO))
+    mapped_units = set()
     for core_tasks in mapping_list:
-        mapped_ids.update(core_tasks)
-    if mapped_ids != task_ids:
+        for unit_key in core_tasks:
+            if isinstance(unit_key, tuple):
+                mapped_units.add(unit_key)
+            else:
+                mapped_units.add((unit_key, None))
+    if mapped_units != expected_units:
         return False
     return _all_mapped_dags_deadline_ok(mapping_list, ts)
 
