@@ -1,0 +1,4209 @@
+{
+  "config": {
+    "count": 1,
+    "task_number": 20,
+    "node_number": 4,
+    "system_utilization": 3.0,
+    "cf": 2.0,
+    "cp": 0.5,
+    "internal_subtask_min": 8,
+    "internal_subtask_max": 8,
+    "seed": 42
+  },
+  "tasksets": [
+    {
+      "summary": {
+        "task_count": 20,
+        "hi_count": 10,
+        "lo_only_count": 10,
+        "sum_uLO": 2.999999999999999,
+        "sum_uHI": 3.0,
+        "total_internal_nodes": 160
+      },
+      "hi_task_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "tasks": [
+        {
+          "id": 0,
+          "criticality": "HI",
+          "cri": 0,
+          "priority": 411,
+          "base_priority": 0,
+          "slack": 230.78048230014844,
+          "eLO": 23.166631924331075,
+          "eHI": 180.21951769985156,
+          "dLO": 411,
+          "dHI": 411,
+          "pLO": 411,
+          "pHI": 411,
+          "uLO": 0.056366501032435706,
+          "uHI": 0.438490310705235,
+          "io_list": [
+            757
+          ],
+          "node_number": 1,
+          "dag_id": 0,
+          "predecessors": [],
+          "successors": [],
+          "internal_dag": {
+            "root_nodes": [
+              0
+            ],
+            "sink_nodes": [
+              7
+            ],
+            "longest_path_nodes": 5,
+            "max_depth_limit": 4,
+            "edge_prob": 0.3,
+            "nodes": [
+              {
+                "node_id": 0,
+                "tag": "T0_root_N0",
+                "role": "root",
+                "cri": 0,
+                "priority": 411,
+                "eLO": 0.11933316277360838,
+                "eHI": 12.213409540847962,
+                "uLO": 0.0002903483279163221,
+                "uHI": 0.029716324916905016,
+                "uLO_share_in_task": 0.005151079499315439,
+                "uHI_share_in_task": 0.06776962726750223,
+                "indegree": 0,
+                "outdegree": 3,
+                "predecessors": [],
+                "successors": [
+                  1,
+                  2,
+                  3
+                ]
+              },
+              {
+                "node_id": 1,
+                "tag": "T0_inner_N1",
+                "role": "inner",
+                "cri": 0,
+                "priority": 411,
+                "eLO": 0.2871652617678338,
+                "eHI": 57.18404824131145,
+                "uLO": 0.0006986989337416881,
+                "uHI": 0.13913393732679186,
+                "uLO_share_in_task": 0.012395641399483476,
+                "uHI_share_in_task": 0.31730219329822645,
+                "indegree": 1,
+                "outdegree": 2,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  4,
+                  5
+                ]
+              },
+              {
+                "node_id": 2,
+                "tag": "T0_inner_N2",
+                "role": "inner",
+                "cri": 0,
+                "priority": 411,
+                "eLO": 2.4413653699468023,
+                "eHI": 34.103291887697864,
+                "uLO": 0.005940061727364483,
+                "uHI": 0.08297637928880258,
+                "uLO_share_in_task": 0.10538283587881951,
+                "uHI_share_in_task": 0.18923195624402644,
+                "indegree": 1,
+                "outdegree": 2,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  4,
+                  5
+                ]
+              },
+              {
+                "node_id": 3,
+                "tag": "T0_inner_N3",
+                "role": "inner",
+                "cri": 0,
+                "priority": 411,
+                "eLO": 3.8834402551138374,
+                "eHI": 4.068871378643277,
+                "uLO": 0.009448759744802524,
+                "uHI": 0.009899930361662476,
+                "uLO_share_in_task": 0.1676307659999208,
+                "uHI_share_in_task": 0.02257730700078679,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  5
+                ]
+              },
+              {
+                "node_id": 4,
+                "tag": "T0_inner_N4",
+                "role": "inner",
+                "cri": 0,
+                "priority": 411,
+                "eLO": 1.3561099369207652,
+                "eHI": 21.839104205508804,
+                "uLO": 0.0032995375594179204,
+                "uHI": 0.05313650658274648,
+                "uLO_share_in_task": 0.058537207365758334,
+                "uHI_share_in_task": 0.1211805718062178,
+                "indegree": 2,
+                "outdegree": 1,
+                "predecessors": [
+                  1,
+                  2
+                ],
+                "successors": [
+                  6
+                ]
+              },
+              {
+                "node_id": 5,
+                "tag": "T0_inner_N5",
+                "role": "inner",
+                "cri": 0,
+                "priority": 411,
+                "eLO": 0.16228901067058493,
+                "eHI": 18.54561821292062,
+                "uLO": 0.00039486377292113125,
+                "uHI": 0.045123158668906614,
+                "uLO_share_in_task": 0.007005291541760055,
+                "uHI_share_in_task": 0.10290571437333224,
+                "indegree": 3,
+                "outdegree": 1,
+                "predecessors": [
+                  1,
+                  2,
+                  3
+                ],
+                "successors": [
+                  6
+                ]
+              },
+              {
+                "node_id": 6,
+                "tag": "T0_inner_N6",
+                "role": "inner",
+                "cri": 0,
+                "priority": 411,
+                "eLO": 1.188450728400363,
+                "eHI": 13.552692925485301,
+                "uLO": 0.002891607611679715,
+                "uHI": 0.03297492195981825,
+                "uLO_share_in_task": 0.05130010837493283,
+                "uHI_share_in_task": 0.07520102760488334,
+                "indegree": 2,
+                "outdegree": 1,
+                "predecessors": [
+                  4,
+                  5
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 7,
+                "tag": "T0_sink_N7",
+                "role": "sink",
+                "cri": 0,
+                "priority": 411,
+                "eLO": 13.728478198737282,
+                "eHI": 18.7124813074363,
+                "uLO": 0.033402623354591925,
+                "uHI": 0.0455291515996017,
+                "uLO_share_in_task": 0.5925970699400096,
+                "uHI_share_in_task": 0.10383160240502469,
+                "indegree": 1,
+                "outdegree": 0,
+                "predecessors": [
+                  6
+                ],
+                "successors": []
+              }
+            ]
+          }
+        },
+        {
+          "id": 1,
+          "criticality": "HI",
+          "cri": 0,
+          "priority": 82,
+          "base_priority": 0,
+          "slack": 81.10718125928743,
+          "eLO": 0.12928611032477227,
+          "eHI": 0.892818740712564,
+          "dLO": 82,
+          "dHI": 82,
+          "pLO": 82,
+          "pHI": 82,
+          "uLO": 0.001576659882009418,
+          "uHI": 0.01088803342332395,
+          "io_list": [
+            137
+          ],
+          "node_number": 1,
+          "dag_id": 1,
+          "predecessors": [],
+          "successors": [],
+          "internal_dag": {
+            "root_nodes": [
+              0
+            ],
+            "sink_nodes": [
+              7
+            ],
+            "longest_path_nodes": 3,
+            "max_depth_limit": 4,
+            "edge_prob": 0.3,
+            "nodes": [
+              {
+                "node_id": 0,
+                "tag": "T1_root_N0",
+                "role": "root",
+                "cri": 0,
+                "priority": 82,
+                "eLO": 0.0033508594315758097,
+                "eHI": 0.06063719898068338,
+                "uLO": 4.0864139409461094e-05,
+                "uHI": 0.0007394780363497973,
+                "uLO_share_in_task": 0.02591817035223897,
+                "uHI_share_in_task": 0.06791658397793988,
+                "indegree": 0,
+                "outdegree": 6,
+                "predecessors": [],
+                "successors": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ]
+              },
+              {
+                "node_id": 1,
+                "tag": "T1_inner_N1",
+                "role": "inner",
+                "cri": 0,
+                "priority": 82,
+                "eLO": 0.005573552556457882,
+                "eHI": 0.12878787533814687,
+                "uLO": 6.797015312753515e-05,
+                "uHI": 0.001570583845587157,
+                "uLO_share_in_task": 0.043110219206509336,
+                "uHI_share_in_task": 0.14424862457004486,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 2,
+                "tag": "T1_inner_N2",
+                "role": "inner",
+                "cri": 0,
+                "priority": 82,
+                "eLO": 0.07950514358818468,
+                "eHI": 0.11581265213167674,
+                "uLO": 0.0009695749218071303,
+                "uHI": 0.0014123494162399603,
+                "uLO_share_in_task": 0.6149550279489756,
+                "uHI_share_in_task": 0.129715749514001,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 3,
+                "tag": "T1_inner_N3",
+                "role": "inner",
+                "cri": 0,
+                "priority": 82,
+                "eLO": 0.015658498570172007,
+                "eHI": 0.05019256103667241,
+                "uLO": 0.00019095729963624397,
+                "uHI": 0.0006121044028862489,
+                "uLO_share_in_task": 0.12111508754372131,
+                "uHI_share_in_task": 0.05621808632356152,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 4,
+                "tag": "T1_inner_N4",
+                "role": "inner",
+                "cri": 0,
+                "priority": 82,
+                "eLO": 0.008600550558758626,
+                "eHI": 0.01882430315234671,
+                "uLO": 0.00010488476291169058,
+                "uHI": 0.00022956467258959402,
+                "uLO_share_in_task": 0.06652339170196762,
+                "uHI_share_in_task": 0.021084126367377685,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 5,
+                "tag": "T1_inner_N5",
+                "role": "inner",
+                "cri": 0,
+                "priority": 82,
+                "eLO": 0.01087590174372662,
+                "eHI": 0.14932832353828027,
+                "uLO": 0.00013263294809422708,
+                "uHI": 0.001821077116320491,
+                "uLO_share_in_task": 0.08412273922083267,
+                "uHI_share_in_task": 0.1672549160640383,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 6,
+                "tag": "T1_inner_N6",
+                "role": "inner",
+                "cri": 0,
+                "priority": 82,
+                "eLO": 0.0019243522972885831,
+                "eHI": 0.0380205001151922,
+                "uLO": 2.3467710942543698e-05,
+                "uHI": 0.00046366463555112445,
+                "uLO_share_in_task": 0.014884447311892417,
+                "uHI_share_in_task": 0.042584791718023096,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 7,
+                "tag": "T1_sink_N7",
+                "role": "sink",
+                "cri": 0,
+                "priority": 82,
+                "eLO": 0.0037972515786080705,
+                "eHI": 0.33121532641956536,
+                "uLO": 4.6307946080586223e-05,
+                "uHI": 0.0040392112977995775,
+                "uLO_share_in_task": 0.029370916713862077,
+                "uHI_share_in_task": 0.37097712146501366,
+                "indegree": 6,
+                "outdegree": 0,
+                "predecessors": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ],
+                "successors": []
+              }
+            ]
+          }
+        },
+        {
+          "id": 2,
+          "criticality": "HI",
+          "cri": 0,
+          "priority": 884,
+          "base_priority": 0,
+          "slack": 761.7820593640157,
+          "eLO": 5.431711823932411,
+          "eHI": 122.21794063598426,
+          "dLO": 884,
+          "dHI": 884,
+          "pLO": 884,
+          "pHI": 884,
+          "uLO": 0.006144470389063813,
+          "uHI": 0.13825558895473333,
+          "io_list": [
+            397
+          ],
+          "node_number": 1,
+          "dag_id": 2,
+          "predecessors": [],
+          "successors": [],
+          "internal_dag": {
+            "root_nodes": [
+              0
+            ],
+            "sink_nodes": [
+              7
+            ],
+            "longest_path_nodes": 3,
+            "max_depth_limit": 4,
+            "edge_prob": 0.3,
+            "nodes": [
+              {
+                "node_id": 0,
+                "tag": "T2_root_N0",
+                "role": "root",
+                "cri": 0,
+                "priority": 884,
+                "eLO": 0.015737717354496375,
+                "eHI": 3.5446818069512034,
+                "uLO": 1.780284768608187e-05,
+                "uHI": 0.004009821048587334,
+                "uLO_share_in_task": 0.002897377081964318,
+                "uHI_share_in_task": 0.029002958064141632,
+                "indegree": 0,
+                "outdegree": 6,
+                "predecessors": [],
+                "successors": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ]
+              },
+              {
+                "node_id": 1,
+                "tag": "T2_inner_N1",
+                "role": "inner",
+                "cri": 0,
+                "priority": 884,
+                "eLO": 2.194763031103629,
+                "eHI": 9.716474724871114,
+                "uLO": 0.002482763609845734,
+                "uHI": 0.010991487245329314,
+                "uLO_share_in_task": 0.4040647041386449,
+                "uHI_share_in_task": 0.07950121458690591,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 2,
+                "tag": "T2_inner_N2",
+                "role": "inner",
+                "cri": 0,
+                "priority": 884,
+                "eLO": 0.5481249670299344,
+                "eHI": 1.434844060977076,
+                "uLO": 0.0006200508676809213,
+                "uHI": 0.001623126765811172,
+                "uLO_share_in_task": 0.10091201168200174,
+                "uHI_share_in_task": 0.011740044493554648,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 3,
+                "tag": "T2_inner_N3",
+                "role": "inner",
+                "cri": 0,
+                "priority": 884,
+                "eLO": 1.0530601458333926,
+                "eHI": 8.043838266738627,
+                "uLO": 0.0011912445088613037,
+                "uHI": 0.009099364555134192,
+                "uLO_share_in_task": 0.19387260958756197,
+                "uHI_share_in_task": 0.06581552777669944,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 4,
+                "tag": "T2_inner_N4",
+                "role": "inner",
+                "cri": 0,
+                "priority": 884,
+                "eLO": 0.790833798150082,
+                "eHI": 62.725821866621175,
+                "uLO": 0.0008946083689480566,
+                "uHI": 0.07095681206631355,
+                "uLO_share_in_task": 0.14559568397307573,
+                "uHI_share_in_task": 0.5132292488338083,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 5,
+                "tag": "T2_inner_N5",
+                "role": "inner",
+                "cri": 0,
+                "priority": 884,
+                "eLO": 0.5725004180601633,
+                "eHI": 5.094692087521799,
+                "uLO": 0.000647624907307877,
+                "uHI": 0.005763226343350451,
+                "uLO_share_in_task": 0.10539963028555675,
+                "uHI_share_in_task": 0.041685304637032836,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 6,
+                "tag": "T2_inner_N6",
+                "role": "inner",
+                "cri": 0,
+                "priority": 884,
+                "eLO": 0.05514271757062053,
+                "eHI": 22.54867869589338,
+                "uLO": 6.237863978576983e-05,
+                "uHI": 0.02550755508585224,
+                "uLO_share_in_task": 0.010151996158496256,
+                "uHI_share_in_task": 0.18449565242677995,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 7,
+                "tag": "T2_sink_N7",
+                "role": "sink",
+                "cri": 0,
+                "priority": 884,
+                "eLO": 0.20154902883009343,
+                "eHI": 9.10890912640991,
+                "uLO": 0.00022799663894806948,
+                "uHI": 0.010304195844355102,
+                "uLO_share_in_task": 0.03710598709269842,
+                "uHI_share_in_task": 0.07453004918107743,
+                "indegree": 6,
+                "outdegree": 0,
+                "predecessors": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ],
+                "successors": []
+              }
+            ]
+          }
+        },
+        {
+          "id": 3,
+          "criticality": "HI",
+          "cri": 0,
+          "priority": 14,
+          "base_priority": 0,
+          "slack": 12.479901286400134,
+          "eLO": 0.709087689029545,
+          "eHI": 1.520098713599867,
+          "dLO": 14,
+          "dHI": 14,
+          "pLO": 14,
+          "pHI": 14,
+          "uLO": 0.0506491206449675,
+          "uHI": 0.10857847954284763,
+          "io_list": [
+            310
+          ],
+          "node_number": 1,
+          "dag_id": 3,
+          "predecessors": [],
+          "successors": [],
+          "internal_dag": {
+            "root_nodes": [
+              0
+            ],
+            "sink_nodes": [
+              7
+            ],
+            "longest_path_nodes": 5,
+            "max_depth_limit": 4,
+            "edge_prob": 0.3,
+            "nodes": [
+              {
+                "node_id": 0,
+                "tag": "T3_root_N0",
+                "role": "root",
+                "cri": 0,
+                "priority": 14,
+                "eLO": 0.013582278542063822,
+                "eHI": 0.02624186653849457,
+                "uLO": 0.0009701627530045588,
+                "uHI": 0.0018744190384638979,
+                "uLO_share_in_task": 0.019154582362940868,
+                "uHI_share_in_task": 0.01726326474966163,
+                "indegree": 0,
+                "outdegree": 1,
+                "predecessors": [],
+                "successors": [
+                  1
+                ]
+              },
+              {
+                "node_id": 1,
+                "tag": "T3_inner_N1",
+                "role": "inner",
+                "cri": 0,
+                "priority": 14,
+                "eLO": 0.17007472672119028,
+                "eHI": 0.26366864427603975,
+                "uLO": 0.012148194765799307,
+                "uHI": 0.018833474591145698,
+                "uLO_share_in_task": 0.23985006276720724,
+                "uHI_share_in_task": 0.17345494862739871,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  2
+                ]
+              },
+              {
+                "node_id": 2,
+                "tag": "T3_inner_N2",
+                "role": "inner",
+                "cri": 0,
+                "priority": 14,
+                "eLO": 0.13225539398259312,
+                "eHI": 0.18740366100138733,
+                "uLO": 0.009446813855899508,
+                "uHI": 0.013385975785813381,
+                "uLO_share_in_task": 0.18651486413986032,
+                "uHI_share_in_task": 0.12328387579355408,
+                "indegree": 1,
+                "outdegree": 4,
+                "predecessors": [
+                  1
+                ],
+                "successors": [
+                  3,
+                  4,
+                  5,
+                  6
+                ]
+              },
+              {
+                "node_id": 3,
+                "tag": "T3_inner_N3",
+                "role": "inner",
+                "cri": 0,
+                "priority": 14,
+                "eLO": 0.06039129049120921,
+                "eHI": 0.2991332397517225,
+                "uLO": 0.004313663606514944,
+                "uHI": 0.021366659982265893,
+                "uLO_share_in_task": 0.08516759129447096,
+                "uHI_share_in_task": 0.19678540418162796,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  2
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 4,
+                "tag": "T3_inner_N4",
+                "role": "inner",
+                "cri": 0,
+                "priority": 14,
+                "eLO": 0.04797478905666344,
+                "eHI": 0.2956871956168023,
+                "uLO": 0.0034267706469045317,
+                "uHI": 0.021120513972628735,
+                "uLO_share_in_task": 0.06765706103616265,
+                "uHI_share_in_task": 0.19451841710763762,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  2
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 5,
+                "tag": "T3_inner_N5",
+                "role": "inner",
+                "cri": 0,
+                "priority": 14,
+                "eLO": 0.1759051195828801,
+                "eHI": 0.17674978198678193,
+                "uLO": 0.01256465139877715,
+                "uHI": 0.012624984427627281,
+                "uLO_share_in_task": 0.24807244901349682,
+                "uHI_share_in_task": 0.11627520002842888,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  2
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 6,
+                "tag": "T3_inner_N6",
+                "role": "inner",
+                "cri": 0,
+                "priority": 14,
+                "eLO": 0.05988437388438794,
+                "eHI": 0.14748479248146817,
+                "uLO": 0.004277455277456281,
+                "uHI": 0.010534628034390585,
+                "uLO_share_in_task": 0.08445270565385994,
+                "uHI_share_in_task": 0.09702316774691408,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  2
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 7,
+                "tag": "T3_sink_N7",
+                "role": "sink",
+                "cri": 0,
+                "priority": 14,
+                "eLO": 0.04901971676855709,
+                "eHI": 0.1237295319471703,
+                "uLO": 0.0035014083406112208,
+                "uHI": 0.008837823710512165,
+                "uLO_share_in_task": 0.0691306837320012,
+                "uHI_share_in_task": 0.08139572176477707,
+                "indegree": 4,
+                "outdegree": 0,
+                "predecessors": [
+                  3,
+                  4,
+                  5,
+                  6
+                ],
+                "successors": []
+              }
+            ]
+          }
+        },
+        {
+          "id": 4,
+          "criticality": "HI",
+          "cri": 0,
+          "priority": 456,
+          "base_priority": 0,
+          "slack": 194.58999553904232,
+          "eLO": 109.33683848828574,
+          "eHI": 261.4100044609577,
+          "dLO": 456,
+          "dHI": 456,
+          "pLO": 456,
+          "pHI": 456,
+          "uLO": 0.2397737686146617,
+          "uHI": 0.5732675536424511,
+          "io_list": [
+            643
+          ],
+          "node_number": 1,
+          "dag_id": 4,
+          "predecessors": [],
+          "successors": [],
+          "internal_dag": {
+            "root_nodes": [
+              0
+            ],
+            "sink_nodes": [
+              7
+            ],
+            "longest_path_nodes": 3,
+            "max_depth_limit": 4,
+            "edge_prob": 0.3,
+            "nodes": [
+              {
+                "node_id": 0,
+                "tag": "T4_root_N0",
+                "role": "root",
+                "cri": 0,
+                "priority": 456,
+                "eLO": 13.886038125254132,
+                "eHI": 23.404806109335187,
+                "uLO": 0.03045183799397836,
+                "uHI": 0.051326329187138565,
+                "uLO_share_in_task": 0.12700237465474065,
+                "uHI_share_in_task": 0.0895329394817816,
+                "indegree": 0,
+                "outdegree": 6,
+                "predecessors": [],
+                "successors": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ]
+              },
+              {
+                "node_id": 1,
+                "tag": "T4_inner_N1",
+                "role": "inner",
+                "cri": 0,
+                "priority": 456,
+                "eLO": 2.0016684355162844,
+                "eHI": 2.7257093507088777,
+                "uLO": 0.004389623762097115,
+                "uHI": 0.005977432786642276,
+                "uLO_share_in_task": 0.018307356085942996,
+                "uHI_share_in_task": 0.010426951165581615,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 2,
+                "tag": "T4_inner_N2",
+                "role": "inner",
+                "cri": 0,
+                "priority": 456,
+                "eLO": 48.950300890456916,
+                "eHI": 56.636243603145545,
+                "uLO": 0.10734715107556342,
+                "uHI": 0.12420228860338935,
+                "uLO_share_in_task": 0.4477018136545206,
+                "uHI_share_in_task": 0.21665675619390581,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 3,
+                "tag": "T4_inner_N3",
+                "role": "inner",
+                "cri": 0,
+                "priority": 456,
+                "eLO": 19.815276882116557,
+                "eHI": 65.64095834796836,
+                "uLO": 0.04345455456604508,
+                "uHI": 0.14394947006133413,
+                "uLO_share_in_task": 0.18123147839362072,
+                "uHI_share_in_task": 0.25110346669142886,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 4,
+                "tag": "T4_inner_N4",
+                "role": "inner",
+                "cri": 0,
+                "priority": 456,
+                "eLO": 2.7231881654212557,
+                "eHI": 63.43010450888547,
+                "uLO": 0.005971903871537842,
+                "uHI": 0.1391011063791348,
+                "uLO_share_in_task": 0.02490641034689343,
+                "uHI_share_in_task": 0.24264604807180948,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 5,
+                "tag": "T4_inner_N5",
+                "role": "inner",
+                "cri": 0,
+                "priority": 456,
+                "eLO": 0.619071364624771,
+                "eHI": 1.308944822427352,
+                "uLO": 0.0013576126417209889,
+                "uHI": 0.00287049303163893,
+                "uLO_share_in_task": 0.0056620565692604855,
+                "uHI_share_in_task": 0.00500724838411013,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 6,
+                "tag": "T4_inner_N6",
+                "role": "inner",
+                "cri": 0,
+                "priority": 456,
+                "eLO": 7.774279460891094,
+                "eHI": 15.27871131402286,
+                "uLO": 0.017048858466866434,
+                "uHI": 0.03350594586408522,
+                "uLO_share_in_task": 0.07110393503580245,
+                "uHI_share_in_task": 0.05844730902908033,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 7,
+                "tag": "T4_sink_N7",
+                "role": "sink",
+                "cri": 0,
+                "priority": 456,
+                "eLO": 13.567015164004744,
+                "eHI": 32.98452640446406,
+                "uLO": 0.02975222623685251,
+                "uHI": 0.07233448772908786,
+                "uLO_share_in_task": 0.12408457525921882,
+                "uHI_share_in_task": 0.12617928098230224,
+                "indegree": 6,
+                "outdegree": 0,
+                "predecessors": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ],
+                "successors": []
+              }
+            ]
+          }
+        },
+        {
+          "id": 5,
+          "criticality": "HI",
+          "cri": 0,
+          "priority": 590,
+          "base_priority": 0,
+          "slack": 303.61737782518225,
+          "eLO": 106.12823375891463,
+          "eHI": 286.38262217481775,
+          "dLO": 590,
+          "dHI": 590,
+          "pLO": 590,
+          "pHI": 590,
+          "uLO": 0.17987836230324514,
+          "uHI": 0.4853942748725725,
+          "io_list": [
+            380
+          ],
+          "node_number": 1,
+          "dag_id": 5,
+          "predecessors": [],
+          "successors": [],
+          "internal_dag": {
+            "root_nodes": [
+              0
+            ],
+            "sink_nodes": [
+              7
+            ],
+            "longest_path_nodes": 4,
+            "max_depth_limit": 4,
+            "edge_prob": 0.3,
+            "nodes": [
+              {
+                "node_id": 0,
+                "tag": "T5_root_N0",
+                "role": "root",
+                "cri": 0,
+                "priority": 590,
+                "eLO": 7.310270687582526,
+                "eHI": 10.574280889201443,
+                "uLO": 0.012390289300987333,
+                "uHI": 0.017922509981697362,
+                "uLO_share_in_task": 0.06888148825871206,
+                "uHI_share_in_task": 0.03692361222513893,
+                "indegree": 0,
+                "outdegree": 4,
+                "predecessors": [],
+                "successors": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "node_id": 1,
+                "tag": "T5_inner_N1",
+                "role": "inner",
+                "cri": 0,
+                "priority": 590,
+                "eLO": 34.55689021311949,
+                "eHI": 95.57952675812349,
+                "uLO": 0.058571000361219476,
+                "uHI": 0.16199919789512457,
+                "uLO_share_in_task": 0.3256144853180199,
+                "uHI_share_in_task": 0.33374764862575523,
+                "indegree": 1,
+                "outdegree": 2,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  5,
+                  6
+                ]
+              },
+              {
+                "node_id": 2,
+                "tag": "T5_inner_N2",
+                "role": "inner",
+                "cri": 0,
+                "priority": 590,
+                "eLO": 0.3281836684728528,
+                "eHI": 5.927260017501056,
+                "uLO": 0.0005562435058861912,
+                "uHI": 0.010046203419493315,
+                "uLO_share_in_task": 0.0030923313886328184,
+                "uHI_share_in_task": 0.020696996111317305,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  5
+                ]
+              },
+              {
+                "node_id": 3,
+                "tag": "T5_inner_N3",
+                "role": "inner",
+                "cri": 0,
+                "priority": 590,
+                "eLO": 7.637120829800102,
+                "eHI": 8.842936452776229,
+                "uLO": 0.012944272592881528,
+                "uHI": 0.014988027886061404,
+                "uLO_share_in_task": 0.07196125441179872,
+                "uHI_share_in_task": 0.03087804834532941,
+                "indegree": 1,
+                "outdegree": 2,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  5,
+                  6
+                ]
+              },
+              {
+                "node_id": 4,
+                "tag": "T5_inner_N4",
+                "role": "inner",
+                "cri": 0,
+                "priority": 590,
+                "eLO": 3.568620620595988,
+                "eHI": 18.781569226597185,
+                "uLO": 0.006048509526433878,
+                "uHI": 0.031833168180673194,
+                "uLO_share_in_task": 0.03362555367408278,
+                "uHI_share_in_task": 0.06558208415010695,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  6
+                ]
+              },
+              {
+                "node_id": 5,
+                "tag": "T5_inner_N5",
+                "role": "inner",
+                "cri": 0,
+                "priority": 590,
+                "eLO": 12.988135847419008,
+                "eHI": 32.47705420283526,
+                "uLO": 0.022013789571896623,
+                "uHI": 0.05504585458107672,
+                "uLO_share_in_task": 0.1223815321088204,
+                "uHI_share_in_task": 0.11340441663743885,
+                "indegree": 3,
+                "outdegree": 1,
+                "predecessors": [
+                  1,
+                  2,
+                  3
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 6,
+                "tag": "T5_inner_N6",
+                "role": "inner",
+                "cri": 0,
+                "priority": 590,
+                "eLO": 4.82412155620104,
+                "eHI": 48.447817646464244,
+                "uLO": 0.008176477213900068,
+                "uHI": 0.08211494516349872,
+                "uLO_share_in_task": 0.04545559070699054,
+                "uHI_share_in_task": 0.16917163925152567,
+                "indegree": 3,
+                "outdegree": 1,
+                "predecessors": [
+                  1,
+                  3,
+                  4
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 7,
+                "tag": "T5_sink_N7",
+                "role": "sink",
+                "cri": 0,
+                "priority": 590,
+                "eLO": 34.91489033572363,
+                "eHI": 65.75217698131881,
+                "uLO": 0.059177780230040056,
+                "uHI": 0.11144436776494715,
+                "uLO_share_in_task": 0.3289877641329429,
+                "uHI_share_in_task": 0.22959555465338757,
+                "indegree": 2,
+                "outdegree": 0,
+                "predecessors": [
+                  5,
+                  6
+                ],
+                "successors": []
+              }
+            ]
+          }
+        },
+        {
+          "id": 6,
+          "criticality": "HI",
+          "cri": 0,
+          "priority": 142,
+          "base_priority": 0,
+          "slack": 6.043836090862527,
+          "eLO": 8.07897574301081,
+          "eHI": 135.95616390913747,
+          "dLO": 142,
+          "dHI": 142,
+          "pLO": 142,
+          "pHI": 142,
+          "uLO": 0.05689419537331556,
+          "uHI": 0.9574377740080103,
+          "io_list": [
+            731
+          ],
+          "node_number": 1,
+          "dag_id": 6,
+          "predecessors": [],
+          "successors": [],
+          "internal_dag": {
+            "root_nodes": [
+              0
+            ],
+            "sink_nodes": [
+              7
+            ],
+            "longest_path_nodes": 4,
+            "max_depth_limit": 4,
+            "edge_prob": 0.3,
+            "nodes": [
+              {
+                "node_id": 0,
+                "tag": "T6_root_N0",
+                "role": "root",
+                "cri": 0,
+                "priority": 142,
+                "eLO": 1.188281714798067,
+                "eHI": 13.871239936983349,
+                "uLO": 0.008368181090127233,
+                "uHI": 0.09768478828861513,
+                "uLO_share_in_task": 0.14708321359004695,
+                "uHI_share_in_task": 0.10202729716803283,
+                "indegree": 0,
+                "outdegree": 2,
+                "predecessors": [],
+                "successors": [
+                  1,
+                  2
+                ]
+              },
+              {
+                "node_id": 1,
+                "tag": "T6_inner_N1",
+                "role": "inner",
+                "cri": 0,
+                "priority": 142,
+                "eLO": 0.11530593180851814,
+                "eHI": 18.861696225731315,
+                "uLO": 0.000812013604285339,
+                "uHI": 0.13282884666007969,
+                "uLO_share_in_task": 0.014272345341334917,
+                "uHI_share_in_task": 0.1387336600519047,
+                "indegree": 1,
+                "outdegree": 3,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  4,
+                  5,
+                  6
+                ]
+              },
+              {
+                "node_id": 2,
+                "tag": "T6_inner_N2",
+                "role": "inner",
+                "cri": 0,
+                "priority": 142,
+                "eLO": 0.034224635290221406,
+                "eHI": 7.202010535041184,
+                "uLO": 0.00024101855838184086,
+                "uHI": 0.050718384049585806,
+                "uLO_share_in_task": 0.004236259196573207,
+                "uHI_share_in_task": 0.05297303430725251,
+                "indegree": 1,
+                "outdegree": 2,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  3,
+                  6
+                ]
+              },
+              {
+                "node_id": 3,
+                "tag": "T6_inner_N3",
+                "role": "inner",
+                "cri": 0,
+                "priority": 142,
+                "eLO": 2.9881862139888824,
+                "eHI": 10.537296635312178,
+                "uLO": 0.02104356488724565,
+                "uHI": 0.07420631433318435,
+                "uLO_share_in_task": 0.3698719131040822,
+                "uHI_share_in_task": 0.07750510408895096,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  2
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 4,
+                "tag": "T6_inner_N4",
+                "role": "inner",
+                "cri": 0,
+                "priority": 142,
+                "eLO": 0.6834564465661952,
+                "eHI": 3.045712238028713,
+                "uLO": 0.0048130735673675715,
+                "uHI": 0.021448677732596573,
+                "uLO_share_in_task": 0.08459691776614865,
+                "uHI_share_in_task": 0.022402163686114522,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  1
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 5,
+                "tag": "T6_inner_N5",
+                "role": "inner",
+                "cri": 0,
+                "priority": 142,
+                "eLO": 1.0583192330649092,
+                "eHI": 18.27293820241405,
+                "uLO": 0.007452952345527529,
+                "uHI": 0.12868266339728204,
+                "uLO_share_in_task": 0.13099670883162015,
+                "uHI_share_in_task": 0.13440316111468298,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  1
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 6,
+                "tag": "T6_inner_N6",
+                "role": "inner",
+                "cri": 0,
+                "priority": 142,
+                "eLO": 0.43958924803721844,
+                "eHI": 33.45837608369675,
+                "uLO": 0.0030956989298395665,
+                "uHI": 0.23562236678659682,
+                "uLO_share_in_task": 0.05441150735196981,
+                "uHI_share_in_task": 0.24609679415534058,
+                "indegree": 2,
+                "outdegree": 1,
+                "predecessors": [
+                  1,
+                  2
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 7,
+                "tag": "T6_sink_N7",
+                "role": "sink",
+                "cri": 0,
+                "priority": 142,
+                "eLO": 1.5716123194567995,
+                "eHI": 30.706894051929936,
+                "uLO": 0.011067692390540841,
+                "uHI": 0.21624573276006998,
+                "uLO_share_in_task": 0.1945311348182243,
+                "uHI_share_in_task": 0.22585878542772095,
+                "indegree": 4,
+                "outdegree": 0,
+                "predecessors": [
+                  3,
+                  4,
+                  5,
+                  6
+                ],
+                "successors": []
+              }
+            ]
+          }
+        },
+        {
+          "id": 7,
+          "criticality": "HI",
+          "cri": 0,
+          "priority": 13,
+          "base_priority": 0,
+          "slack": 12.491733250978424,
+          "eLO": 0.3946777365745935,
+          "eHI": 0.5082667490215766,
+          "dLO": 13,
+          "dHI": 13,
+          "pLO": 13,
+          "pHI": 13,
+          "uLO": 0.030359825890353347,
+          "uHI": 0.039097442232428975,
+          "io_list": [
+            687
+          ],
+          "node_number": 1,
+          "dag_id": 7,
+          "predecessors": [],
+          "successors": [],
+          "internal_dag": {
+            "root_nodes": [
+              0
+            ],
+            "sink_nodes": [
+              7
+            ],
+            "longest_path_nodes": 4,
+            "max_depth_limit": 4,
+            "edge_prob": 0.3,
+            "nodes": [
+              {
+                "node_id": 0,
+                "tag": "T7_root_N0",
+                "role": "root",
+                "cri": 0,
+                "priority": 13,
+                "eLO": 0.07722034176721543,
+                "eHI": 0.09003091722393276,
+                "uLO": 0.005940026289785802,
+                "uHI": 0.006925455171071751,
+                "uLO_share_in_task": 0.19565416189271395,
+                "uHI_share_in_task": 0.1771332029829691,
+                "indegree": 0,
+                "outdegree": 4,
+                "predecessors": [],
+                "successors": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "node_id": 1,
+                "tag": "T7_inner_N1",
+                "role": "inner",
+                "cri": 0,
+                "priority": 13,
+                "eLO": 0.0041826139099165145,
+                "eHI": 0.02154782331183285,
+                "uLO": 0.00032173953153203955,
+                "uHI": 0.0016575248701409884,
+                "uLO_share_in_task": 0.010597542050933512,
+                "uHI_share_in_task": 0.042394713707542005,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  5
+                ]
+              },
+              {
+                "node_id": 2,
+                "tag": "T7_inner_N2",
+                "role": "inner",
+                "cri": 0,
+                "priority": 13,
+                "eLO": 0.03298820746784768,
+                "eHI": 0.0613622525372643,
+                "uLO": 0.002537554420603668,
+                "uHI": 0.004720173272097254,
+                "uLO_share_in_task": 0.08358264074926598,
+                "uHI_share_in_task": 0.12072844162123102,
+                "indegree": 1,
+                "outdegree": 2,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  5,
+                  6
+                ]
+              },
+              {
+                "node_id": 3,
+                "tag": "T7_inner_N3",
+                "role": "inner",
+                "cri": 0,
+                "priority": 13,
+                "eLO": 0.049284671016331036,
+                "eHI": 0.07046917898436633,
+                "uLO": 0.003791128539717772,
+                "uHI": 0.005420706075720487,
+                "uLO_share_in_task": 0.1248731976727963,
+                "uHI_share_in_task": 0.13864605371101074,
+                "indegree": 1,
+                "outdegree": 2,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  5,
+                  6
+                ]
+              },
+              {
+                "node_id": 4,
+                "tag": "T7_inner_N4",
+                "role": "inner",
+                "cri": 0,
+                "priority": 13,
+                "eLO": 0.033863717547655305,
+                "eHI": 0.040853415557894145,
+                "uLO": 0.0026049013498196387,
+                "uHI": 0.003142570427530319,
+                "uLO_share_in_task": 0.08580093177172438,
+                "uHI_share_in_task": 0.08037790321034724,
+                "indegree": 1,
+                "outdegree": 2,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  5,
+                  6
+                ]
+              },
+              {
+                "node_id": 5,
+                "tag": "T7_inner_N5",
+                "role": "inner",
+                "cri": 0,
+                "priority": 13,
+                "eLO": 0.014599963973882035,
+                "eHI": 0.014686318867626131,
+                "uLO": 0.0011230741518370795,
+                "uHI": 0.0011297168359712408,
+                "uLO_share_in_task": 0.036992114378163465,
+                "uHI_share_in_task": 0.028894903898194362,
+                "indegree": 4,
+                "outdegree": 1,
+                "predecessors": [
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 6,
+                "tag": "T7_inner_N6",
+                "role": "inner",
+                "cri": 0,
+                "priority": 13,
+                "eLO": 0.03433669539972601,
+                "eHI": 0.04066695279755676,
+                "uLO": 0.0026412842615173853,
+                "uHI": 0.0031282271382735974,
+                "uLO_share_in_task": 0.08699932177004473,
+                "uHI_share_in_task": 0.08001104316944092,
+                "indegree": 3,
+                "outdegree": 1,
+                "predecessors": [
+                  2,
+                  3,
+                  4
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 7,
+                "tag": "T7_sink_N7",
+                "role": "sink",
+                "cri": 0,
+                "priority": 13,
+                "eLO": 0.14820152549201948,
+                "eHI": 0.1686498897411034,
+                "uLO": 0.01140011734553996,
+                "uHI": 0.012973068441623338,
+                "uLO_share_in_task": 0.37550008971435767,
+                "uHI_share_in_task": 0.3318137376992646,
+                "indegree": 2,
+                "outdegree": 0,
+                "predecessors": [
+                  5,
+                  6
+                ],
+                "successors": []
+              }
+            ]
+          }
+        },
+        {
+          "id": 8,
+          "criticality": "HI",
+          "cri": 0,
+          "priority": 28,
+          "base_priority": 0,
+          "slack": 21.403564334432836,
+          "eLO": 2.653422937528139,
+          "eHI": 6.5964356655671645,
+          "dLO": 28,
+          "dHI": 28,
+          "pLO": 28,
+          "pHI": 28,
+          "uLO": 0.09476510491171926,
+          "uHI": 0.23558698805597017,
+          "io_list": [
+            306
+          ],
+          "node_number": 1,
+          "dag_id": 8,
+          "predecessors": [],
+          "successors": [],
+          "internal_dag": {
+            "root_nodes": [
+              0
+            ],
+            "sink_nodes": [
+              7
+            ],
+            "longest_path_nodes": 5,
+            "max_depth_limit": 4,
+            "edge_prob": 0.3,
+            "nodes": [
+              {
+                "node_id": 0,
+                "tag": "T8_root_N0",
+                "role": "root",
+                "cri": 0,
+                "priority": 28,
+                "eLO": 0.6073213983662842,
+                "eHI": 2.6471668832123902,
+                "uLO": 0.021690049941653005,
+                "uHI": 0.0945416744004425,
+                "uLO_share_in_task": 0.22888224480792693,
+                "uHI_share_in_task": 0.401302615142656,
+                "indegree": 0,
+                "outdegree": 1,
+                "predecessors": [],
+                "successors": [
+                  1
+                ]
+              },
+              {
+                "node_id": 1,
+                "tag": "T8_inner_N1",
+                "role": "inner",
+                "cri": 0,
+                "priority": 28,
+                "eLO": 0.20210535071910787,
+                "eHI": 0.2966618947878423,
+                "uLO": 0.007218048239968139,
+                "uHI": 0.010595067670994367,
+                "uLO_share_in_task": 0.07616778609270033,
+                "uHI_share_in_task": 0.04497305966863169,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  2
+                ]
+              },
+              {
+                "node_id": 2,
+                "tag": "T8_inner_N2",
+                "role": "inner",
+                "cri": 0,
+                "priority": 28,
+                "eLO": 0.5912560235377277,
+                "eHI": 0.8218142713063126,
+                "uLO": 0.021116286554918845,
+                "uHI": 0.029350509689511164,
+                "uLO_share_in_task": 0.22282765976558816,
+                "uHI_share_in_task": 0.12458459582894342,
+                "indegree": 1,
+                "outdegree": 4,
+                "predecessors": [
+                  1
+                ],
+                "successors": [
+                  3,
+                  4,
+                  5,
+                  6
+                ]
+              },
+              {
+                "node_id": 3,
+                "tag": "T8_inner_N3",
+                "role": "inner",
+                "cri": 0,
+                "priority": 28,
+                "eLO": 0.756193733795387,
+                "eHI": 1.0898246483797163,
+                "uLO": 0.027006919064120966,
+                "uHI": 0.03892230887070415,
+                "uLO_share_in_task": 0.28498801419868547,
+                "uHI_share_in_task": 0.16521417074807665,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  2
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 4,
+                "tag": "T8_inner_N4",
+                "role": "inner",
+                "cri": 0,
+                "priority": 28,
+                "eLO": 0.12327265591276695,
+                "eHI": 0.3548438453215286,
+                "uLO": 0.0044025948540273915,
+                "uHI": 0.012672994475768877,
+                "uLO_share_in_task": 0.046457974780154954,
+                "uHI_share_in_task": 0.05379327007974676,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  2
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 5,
+                "tag": "T8_inner_N5",
+                "role": "inner",
+                "cri": 0,
+                "priority": 28,
+                "eLO": 0.03623598255721203,
+                "eHI": 0.34431880934590614,
+                "uLO": 0.001294142234186144,
+                "uHI": 0.012297100333782363,
+                "uLO_share_in_task": 0.013656316166079633,
+                "uHI_share_in_task": 0.05219770597373081,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  2
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 6,
+                "tag": "T8_inner_N6",
+                "role": "inner",
+                "cri": 0,
+                "priority": 28,
+                "eLO": 0.008299837657211893,
+                "eHI": 0.6642559366773055,
+                "uLO": 0.0002964227734718533,
+                "uHI": 0.023723426309903768,
+                "uLO_share_in_task": 0.0031279738860416307,
+                "uHI_share_in_task": 0.100699221572745,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  2
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 7,
+                "tag": "T8_sink_N7",
+                "role": "sink",
+                "cri": 0,
+                "priority": 28,
+                "eLO": 0.32873795498244157,
+                "eHI": 0.37754937653616366,
+                "uLO": 0.011740641249372913,
+                "uHI": 0.013483906304862988,
+                "uLO_share_in_task": 0.12389203030282289,
+                "uHI_share_in_task": 0.057235360985469684,
+                "indegree": 4,
+                "outdegree": 0,
+                "predecessors": [
+                  3,
+                  4,
+                  5,
+                  6
+                ],
+                "successors": []
+              }
+            ]
+          }
+        },
+        {
+          "id": 9,
+          "criticality": "HI",
+          "cri": 0,
+          "priority": 935,
+          "base_priority": 0,
+          "slack": 922.8416764841305,
+          "eLO": 1.3927707850607738,
+          "eHI": 12.158323515869473,
+          "dLO": 935,
+          "dHI": 935,
+          "pLO": 935,
+          "pHI": 935,
+          "uLO": 0.0014895944225248917,
+          "uHI": 0.013003554562427244,
+          "io_list": [
+            885
+          ],
+          "node_number": 1,
+          "dag_id": 9,
+          "predecessors": [],
+          "successors": [],
+          "internal_dag": {
+            "root_nodes": [
+              0
+            ],
+            "sink_nodes": [
+              7
+            ],
+            "longest_path_nodes": 5,
+            "max_depth_limit": 4,
+            "edge_prob": 0.3,
+            "nodes": [
+              {
+                "node_id": 0,
+                "tag": "T9_root_N0",
+                "role": "root",
+                "cri": 0,
+                "priority": 935,
+                "eLO": 0.1443330313916935,
+                "eHI": 0.5387538313001976,
+                "uLO": 0.00015436687849378986,
+                "uHI": 0.0005762073062034198,
+                "uLO_share_in_task": 0.10363013996261813,
+                "uHI_share_in_task": 0.044311522932992946,
+                "indegree": 0,
+                "outdegree": 4,
+                "predecessors": [],
+                "successors": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "node_id": 1,
+                "tag": "T9_inner_N1",
+                "role": "inner",
+                "cri": 0,
+                "priority": 935,
+                "eLO": 0.020302317699023274,
+                "eHI": 1.8103847891118463,
+                "uLO": 2.171370876900885e-05,
+                "uHI": 0.0019362404161624024,
+                "uLO_share_in_task": 0.014576926739698508,
+                "uHI_share_in_task": 0.14890085682856424,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  5
+                ]
+              },
+              {
+                "node_id": 2,
+                "tag": "T9_inner_N2",
+                "role": "inner",
+                "cri": 0,
+                "priority": 935,
+                "eLO": 0.6491122398931142,
+                "eHI": 2.2818901567914343,
+                "uLO": 0.0006942376897252558,
+                "uHI": 0.0024405242318624966,
+                "uLO_share_in_task": 0.46605819626291917,
+                "uHI_share_in_task": 0.18768131591604967,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  5
+                ]
+              },
+              {
+                "node_id": 3,
+                "tag": "T9_inner_N3",
+                "role": "inner",
+                "cri": 0,
+                "priority": 935,
+                "eLO": 0.24013207600706932,
+                "eHI": 0.3455300083340823,
+                "uLO": 0.0002568257497401811,
+                "uHI": 0.00036955081105249444,
+                "uLO_share_in_task": 0.17241320580729377,
+                "uHI_share_in_task": 0.028419214859933966,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  5
+                ]
+              },
+              {
+                "node_id": 4,
+                "tag": "T9_inner_N4",
+                "role": "inner",
+                "cri": 0,
+                "priority": 935,
+                "eLO": 0.06710483759806612,
+                "eHI": 3.1276896876856353,
+                "uLO": 7.176987978402793e-05,
+                "uHI": 0.0033451226606263477,
+                "uLO_share_in_task": 0.04818081935509438,
+                "uHI_share_in_task": 0.2572467892965066,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  5
+                ]
+              },
+              {
+                "node_id": 5,
+                "tag": "T9_inner_N5",
+                "role": "inner",
+                "cri": 0,
+                "priority": 935,
+                "eLO": 0.08799783246499386,
+                "eHI": 1.0419257217053401,
+                "uLO": 9.411532883956562e-05,
+                "uHI": 0.0011143590606474227,
+                "uLO_share_in_task": 0.06318184830474748,
+                "uHI_share_in_task": 0.08569649593098769,
+                "indegree": 4,
+                "outdegree": 1,
+                "predecessors": [
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "successors": [
+                  6
+                ]
+              },
+              {
+                "node_id": 6,
+                "tag": "T9_inner_N6",
+                "role": "inner",
+                "cri": 0,
+                "priority": 935,
+                "eLO": 0.07284023437461604,
+                "eHI": 1.740156456424721,
+                "uLO": 7.790399398354656e-05,
+                "uHI": 0.0018611298999194877,
+                "uLO_share_in_task": 0.052298795434194606,
+                "uHI_share_in_task": 0.14312470417104853,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  5
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 7,
+                "tag": "T9_sink_N7",
+                "role": "sink",
+                "cri": 0,
+                "priority": 935,
+                "eLO": 0.11094821563219767,
+                "eHI": 1.2719928645162175,
+                "uLO": 0.00011866119318951623,
+                "uHI": 0.001360420175953174,
+                "uLO_share_in_task": 0.07966006813343406,
+                "uHI_share_in_task": 0.1046191000639165,
+                "indegree": 1,
+                "outdegree": 0,
+                "predecessors": [
+                  6
+                ],
+                "successors": []
+              }
+            ]
+          }
+        },
+        {
+          "id": 10,
+          "criticality": "LO",
+          "cri": 1,
+          "priority": 29,
+          "base_priority": 0,
+          "slack": 18.140984774665533,
+          "eLO": 10.859015225334469,
+          "eHI": 0.0,
+          "dLO": 29,
+          "dHI": 29,
+          "pLO": 29,
+          "pHI": 29,
+          "uLO": 0.3744488008736024,
+          "uHI": 0.0,
+          "io_list": [
+            113
+          ],
+          "node_number": 1,
+          "dag_id": 10,
+          "predecessors": [],
+          "successors": [],
+          "internal_dag": {
+            "root_nodes": [
+              0
+            ],
+            "sink_nodes": [
+              7
+            ],
+            "longest_path_nodes": 3,
+            "max_depth_limit": 4,
+            "edge_prob": 0.3,
+            "nodes": [
+              {
+                "node_id": 0,
+                "tag": "T10_root_N0",
+                "role": "root",
+                "cri": 1,
+                "priority": 29,
+                "eLO": 2.082262735355911,
+                "eHI": 0.0,
+                "uLO": 0.07180216328813487,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.19175428822476628,
+                "uHI_share_in_task": 0.0,
+                "indegree": 0,
+                "outdegree": 6,
+                "predecessors": [],
+                "successors": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ]
+              },
+              {
+                "node_id": 1,
+                "tag": "T10_inner_N1",
+                "role": "inner",
+                "cri": 1,
+                "priority": 29,
+                "eLO": 0.6467773542618396,
+                "eHI": 0.0,
+                "uLO": 0.022302667388339296,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.05956132677232877,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 2,
+                "tag": "T10_inner_N2",
+                "role": "inner",
+                "cri": 1,
+                "priority": 29,
+                "eLO": 1.5413297310947511,
+                "eHI": 0.0,
+                "uLO": 0.0531493010722328,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.1419401022202063,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 3,
+                "tag": "T10_inner_N3",
+                "role": "inner",
+                "cri": 1,
+                "priority": 29,
+                "eLO": 1.1341315124018003,
+                "eHI": 0.0,
+                "uLO": 0.03910798318626898,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.10444146995538152,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 4,
+                "tag": "T10_inner_N4",
+                "role": "inner",
+                "cri": 1,
+                "priority": 29,
+                "eLO": 1.3392448415723814,
+                "eHI": 0.0,
+                "uLO": 0.04618085660594419,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.1233302296554365,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 5,
+                "tag": "T10_inner_N5",
+                "role": "inner",
+                "cri": 1,
+                "priority": 29,
+                "eLO": 0.9805890941426524,
+                "eHI": 0.0,
+                "uLO": 0.03381341703940181,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.09030184356449773,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 6,
+                "tag": "T10_inner_N6",
+                "role": "inner",
+                "cri": 1,
+                "priority": 29,
+                "eLO": 2.4240722234476517,
+                "eHI": 0.0,
+                "uLO": 0.08358869736026385,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.22323131270616556,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 7,
+                "tag": "T10_sink_N7",
+                "role": "sink",
+                "cri": 1,
+                "priority": 29,
+                "eLO": 0.7106077330574806,
+                "eHI": 0.0,
+                "uLO": 0.024503714933016573,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.06543942690121729,
+                "uHI_share_in_task": 0.0,
+                "indegree": 6,
+                "outdegree": 0,
+                "predecessors": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ],
+                "successors": []
+              }
+            ]
+          }
+        },
+        {
+          "id": 11,
+          "criticality": "LO",
+          "cri": 1,
+          "priority": 57,
+          "base_priority": 0,
+          "slack": 41.401671812821036,
+          "eLO": 15.598328187178963,
+          "eHI": 0.0,
+          "dLO": 57,
+          "dHI": 57,
+          "pLO": 57,
+          "pHI": 57,
+          "uLO": 0.2736548804768239,
+          "uHI": 0.0,
+          "io_list": [
+            474
+          ],
+          "node_number": 1,
+          "dag_id": 11,
+          "predecessors": [],
+          "successors": [],
+          "internal_dag": {
+            "root_nodes": [
+              0
+            ],
+            "sink_nodes": [
+              7
+            ],
+            "longest_path_nodes": 4,
+            "max_depth_limit": 4,
+            "edge_prob": 0.3,
+            "nodes": [
+              {
+                "node_id": 0,
+                "tag": "T11_root_N0",
+                "role": "root",
+                "cri": 1,
+                "priority": 57,
+                "eLO": 0.8532317909585089,
+                "eHI": 0.0,
+                "uLO": 0.01496897878874577,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.05470020765814007,
+                "uHI_share_in_task": 0.0,
+                "indegree": 0,
+                "outdegree": 3,
+                "predecessors": [],
+                "successors": [
+                  1,
+                  2,
+                  3
+                ]
+              },
+              {
+                "node_id": 1,
+                "tag": "T11_inner_N1",
+                "role": "inner",
+                "cri": 1,
+                "priority": 57,
+                "eLO": 5.801243319848952,
+                "eHI": 0.0,
+                "uLO": 0.10177619859384127,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.371914428920484,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 2,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  4,
+                  5
+                ]
+              },
+              {
+                "node_id": 2,
+                "tag": "T11_inner_N2",
+                "role": "inner",
+                "cri": 1,
+                "priority": 57,
+                "eLO": 0.3551906876338544,
+                "eHI": 0.0,
+                "uLO": 0.006231415572523762,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.022771074141509806,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 2,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  4,
+                  5
+                ]
+              },
+              {
+                "node_id": 3,
+                "tag": "T11_inner_N3",
+                "role": "inner",
+                "cri": 1,
+                "priority": 57,
+                "eLO": 0.19814320446101427,
+                "eHI": 0.0,
+                "uLO": 0.0034761965694914787,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.012702848797852452,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 2,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  5,
+                  6
+                ]
+              },
+              {
+                "node_id": 4,
+                "tag": "T11_inner_N4",
+                "role": "inner",
+                "cri": 1,
+                "priority": 57,
+                "eLO": 1.9844046100040311,
+                "eHI": 0.0,
+                "uLO": 0.034814115964983,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.12721905746508858,
+                "uHI_share_in_task": 0.0,
+                "indegree": 2,
+                "outdegree": 1,
+                "predecessors": [
+                  1,
+                  2
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 5,
+                "tag": "T11_inner_N5",
+                "role": "inner",
+                "cri": 1,
+                "priority": 57,
+                "eLO": 2.5229172099123187,
+                "eHI": 0.0,
+                "uLO": 0.04426170543705822,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.16174279574307387,
+                "uHI_share_in_task": 0.0,
+                "indegree": 3,
+                "outdegree": 1,
+                "predecessors": [
+                  1,
+                  2,
+                  3
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 6,
+                "tag": "T11_inner_N6",
+                "role": "inner",
+                "cri": 1,
+                "priority": 57,
+                "eLO": 3.400704297229028,
+                "eHI": 0.0,
+                "uLO": 0.05966147889875487,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.2180172295659374,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  3
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 7,
+                "tag": "T11_sink_N7",
+                "role": "sink",
+                "cri": 1,
+                "priority": 57,
+                "eLO": 0.4824930671312558,
+                "eHI": 0.0,
+                "uLO": 0.00846479065142554,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.030932357707913898,
+                "uHI_share_in_task": 0.0,
+                "indegree": 3,
+                "outdegree": 0,
+                "predecessors": [
+                  4,
+                  5,
+                  6
+                ],
+                "successors": []
+              }
+            ]
+          }
+        },
+        {
+          "id": 12,
+          "criticality": "LO",
+          "cri": 1,
+          "priority": 186,
+          "base_priority": 0,
+          "slack": 168.32663405278274,
+          "eLO": 17.673365947217253,
+          "eHI": 0.0,
+          "dLO": 186,
+          "dHI": 186,
+          "pLO": 186,
+          "pHI": 186,
+          "uLO": 0.09501809649041534,
+          "uHI": 0.0,
+          "io_list": [
+            383
+          ],
+          "node_number": 1,
+          "dag_id": 12,
+          "predecessors": [],
+          "successors": [],
+          "internal_dag": {
+            "root_nodes": [
+              0
+            ],
+            "sink_nodes": [
+              7
+            ],
+            "longest_path_nodes": 3,
+            "max_depth_limit": 4,
+            "edge_prob": 0.3,
+            "nodes": [
+              {
+                "node_id": 0,
+                "tag": "T12_root_N0",
+                "role": "root",
+                "cri": 1,
+                "priority": 186,
+                "eLO": 2.2948172602226733,
+                "eHI": 0.0,
+                "uLO": 0.012337727205498243,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.12984607839142276,
+                "uHI_share_in_task": 0.0,
+                "indegree": 0,
+                "outdegree": 6,
+                "predecessors": [],
+                "successors": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ]
+              },
+              {
+                "node_id": 1,
+                "tag": "T12_inner_N1",
+                "role": "inner",
+                "cri": 1,
+                "priority": 186,
+                "eLO": 5.25904736630481,
+                "eHI": 0.0,
+                "uLO": 0.02827444820593984,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.2975690868401256,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 2,
+                "tag": "T12_inner_N2",
+                "role": "inner",
+                "cri": 1,
+                "priority": 186,
+                "eLO": 3.8551783689201438,
+                "eHI": 0.0,
+                "uLO": 0.02072676542430185,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.21813492576535246,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 3,
+                "tag": "T12_inner_N3",
+                "role": "inner",
+                "cri": 1,
+                "priority": 186,
+                "eLO": 0.1629950013469064,
+                "eHI": 0.0,
+                "uLO": 0.0008763172115425075,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.009222634886512416,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 4,
+                "tag": "T12_inner_N4",
+                "role": "inner",
+                "cri": 1,
+                "priority": 186,
+                "eLO": 0.3991489916230072,
+                "eHI": 0.0,
+                "uLO": 0.002145962320553802,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.02258477489885592,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 5,
+                "tag": "T12_inner_N5",
+                "role": "inner",
+                "cri": 1,
+                "priority": 186,
+                "eLO": 0.8087479084832294,
+                "eHI": 0.0,
+                "uLO": 0.004348107034856072,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.04576083078337266,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 6,
+                "tag": "T12_inner_N6",
+                "role": "inner",
+                "cri": 1,
+                "priority": 186,
+                "eLO": 3.040729103252506,
+                "eHI": 0.0,
+                "uLO": 0.016348005931465084,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.17205149898066144,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 7,
+                "tag": "T12_sink_N7",
+                "role": "sink",
+                "cri": 1,
+                "priority": 186,
+                "eLO": 1.8527019470639767,
+                "eHI": 0.0,
+                "uLO": 0.00996076315625794,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.10483016945369665,
+                "uHI_share_in_task": 0.0,
+                "indegree": 6,
+                "outdegree": 0,
+                "predecessors": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ],
+                "successors": []
+              }
+            ]
+          }
+        },
+        {
+          "id": 13,
+          "criticality": "LO",
+          "cri": 1,
+          "priority": 21,
+          "base_priority": 0,
+          "slack": 20.189238259824332,
+          "eLO": 0.8107617401756676,
+          "eHI": 0.0,
+          "dLO": 21,
+          "dHI": 21,
+          "pLO": 21,
+          "pHI": 21,
+          "uLO": 0.03860770191312703,
+          "uHI": 0.0,
+          "io_list": [
+            373
+          ],
+          "node_number": 1,
+          "dag_id": 13,
+          "predecessors": [],
+          "successors": [],
+          "internal_dag": {
+            "root_nodes": [
+              0
+            ],
+            "sink_nodes": [
+              7
+            ],
+            "longest_path_nodes": 4,
+            "max_depth_limit": 4,
+            "edge_prob": 0.3,
+            "nodes": [
+              {
+                "node_id": 0,
+                "tag": "T13_root_N0",
+                "role": "root",
+                "cri": 1,
+                "priority": 21,
+                "eLO": 0.0922410306767903,
+                "eHI": 0.0,
+                "uLO": 0.00439243003222811,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.11377082329613195,
+                "uHI_share_in_task": 0.0,
+                "indegree": 0,
+                "outdegree": 2,
+                "predecessors": [],
+                "successors": [
+                  1,
+                  2
+                ]
+              },
+              {
+                "node_id": 1,
+                "tag": "T13_inner_N1",
+                "role": "inner",
+                "cri": 1,
+                "priority": 21,
+                "eLO": 0.11896969343174024,
+                "eHI": 0.0,
+                "uLO": 0.005665223496749535,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.14673816922584815,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 3,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  4,
+                  5,
+                  6
+                ]
+              },
+              {
+                "node_id": 2,
+                "tag": "T13_inner_N2",
+                "role": "inner",
+                "cri": 1,
+                "priority": 21,
+                "eLO": 0.18893172854062576,
+                "eHI": 0.0,
+                "uLO": 0.008996748978125036,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.23302990160794954,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 2,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  3,
+                  6
+                ]
+              },
+              {
+                "node_id": 3,
+                "tag": "T13_inner_N3",
+                "role": "inner",
+                "cri": 1,
+                "priority": 21,
+                "eLO": 0.0889638354032993,
+                "eHI": 0.0,
+                "uLO": 0.004236373114442824,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.10972870449464417,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  2
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 4,
+                "tag": "T13_inner_N4",
+                "role": "inner",
+                "cri": 1,
+                "priority": 21,
+                "eLO": 0.2485384056455409,
+                "eHI": 0.0,
+                "uLO": 0.011835162173597185,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.3065492527948965,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  1
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 5,
+                "tag": "T13_inner_N5",
+                "role": "inner",
+                "cri": 1,
+                "priority": 21,
+                "eLO": 0.006501680244163221,
+                "eHI": 0.0,
+                "uLO": 0.00030960382115062957,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.008019224294864362,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  1
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 6,
+                "tag": "T13_inner_N6",
+                "role": "inner",
+                "cri": 1,
+                "priority": 21,
+                "eLO": 0.01603027408287116,
+                "eHI": 0.0,
+                "uLO": 0.0007633463848986267,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.019771867971221588,
+                "uHI_share_in_task": 0.0,
+                "indegree": 2,
+                "outdegree": 1,
+                "predecessors": [
+                  1,
+                  2
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 7,
+                "tag": "T13_sink_N7",
+                "role": "sink",
+                "cri": 1,
+                "priority": 21,
+                "eLO": 0.05058509215063663,
+                "eHI": 0.0,
+                "uLO": 0.002408813911935078,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.062392056314443715,
+                "uHI_share_in_task": 0.0,
+                "indegree": 4,
+                "outdegree": 0,
+                "predecessors": [
+                  3,
+                  4,
+                  5,
+                  6
+                ],
+                "successors": []
+              }
+            ]
+          }
+        },
+        {
+          "id": 14,
+          "criticality": "LO",
+          "cri": 1,
+          "priority": 26,
+          "base_priority": 0,
+          "slack": 7.279548584776062,
+          "eLO": 18.720451415223938,
+          "eHI": 0.0,
+          "dLO": 26,
+          "dHI": 26,
+          "pLO": 26,
+          "pHI": 26,
+          "uLO": 0.7200173621239976,
+          "uHI": 0.0,
+          "io_list": [
+            283
+          ],
+          "node_number": 1,
+          "dag_id": 14,
+          "predecessors": [],
+          "successors": [],
+          "internal_dag": {
+            "root_nodes": [
+              0
+            ],
+            "sink_nodes": [
+              7
+            ],
+            "longest_path_nodes": 4,
+            "max_depth_limit": 4,
+            "edge_prob": 0.3,
+            "nodes": [
+              {
+                "node_id": 0,
+                "tag": "T14_root_N0",
+                "role": "root",
+                "cri": 1,
+                "priority": 26,
+                "eLO": 0.88169768754151,
+                "eHI": 0.0,
+                "uLO": 0.03391144952082731,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.047098099719138795,
+                "uHI_share_in_task": 0.0,
+                "indegree": 0,
+                "outdegree": 3,
+                "predecessors": [],
+                "successors": [
+                  1,
+                  2,
+                  3
+                ]
+              },
+              {
+                "node_id": 1,
+                "tag": "T14_inner_N1",
+                "role": "inner",
+                "cri": 1,
+                "priority": 26,
+                "eLO": 4.645707130158417,
+                "eHI": 0.0,
+                "uLO": 0.17868104346763142,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.24816213173045668,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 2,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  4,
+                  5
+                ]
+              },
+              {
+                "node_id": 2,
+                "tag": "T14_inner_N2",
+                "role": "inner",
+                "cri": 1,
+                "priority": 26,
+                "eLO": 1.2934107381958293,
+                "eHI": 0.0,
+                "uLO": 0.049746566853685746,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.06909078790397093,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 2,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  4,
+                  6
+                ]
+              },
+              {
+                "node_id": 3,
+                "tag": "T14_inner_N3",
+                "role": "inner",
+                "cri": 1,
+                "priority": 26,
+                "eLO": 3.85356423782213,
+                "eHI": 0.0,
+                "uLO": 0.148214009147005,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.20584782665488052,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 2,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  5,
+                  6
+                ]
+              },
+              {
+                "node_id": 4,
+                "tag": "T14_inner_N4",
+                "role": "inner",
+                "cri": 1,
+                "priority": 26,
+                "eLO": 3.6360425343326335,
+                "eHI": 0.0,
+                "uLO": 0.13984778978202436,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.19422835772943559,
+                "uHI_share_in_task": 0.0,
+                "indegree": 2,
+                "outdegree": 1,
+                "predecessors": [
+                  1,
+                  2
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 5,
+                "tag": "T14_inner_N5",
+                "role": "inner",
+                "cri": 1,
+                "priority": 26,
+                "eLO": 0.5891615518470606,
+                "eHI": 0.0,
+                "uLO": 0.02266005968642541,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.03147154621324675,
+                "uHI_share_in_task": 0.0,
+                "indegree": 2,
+                "outdegree": 1,
+                "predecessors": [
+                  1,
+                  3
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 6,
+                "tag": "T14_inner_N6",
+                "role": "inner",
+                "cri": 1,
+                "priority": 26,
+                "eLO": 2.844029976963733,
+                "eHI": 0.0,
+                "uLO": 0.10938576834475895,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.15192101482397463,
+                "uHI_share_in_task": 0.0,
+                "indegree": 2,
+                "outdegree": 1,
+                "predecessors": [
+                  2,
+                  3
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 7,
+                "tag": "T14_sink_N7",
+                "role": "sink",
+                "cri": 1,
+                "priority": 26,
+                "eLO": 0.9768375583626256,
+                "eHI": 0.0,
+                "uLO": 0.03757067532163945,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.05218023522489618,
+                "uHI_share_in_task": 0.0,
+                "indegree": 3,
+                "outdegree": 0,
+                "predecessors": [
+                  4,
+                  5,
+                  6
+                ],
+                "successors": []
+              }
+            ]
+          }
+        },
+        {
+          "id": 15,
+          "criticality": "LO",
+          "cri": 1,
+          "priority": 253,
+          "base_priority": 0,
+          "slack": 229.27984463387185,
+          "eLO": 23.720155366128147,
+          "eHI": 0.0,
+          "dLO": 253,
+          "dHI": 253,
+          "pLO": 253,
+          "pHI": 253,
+          "uLO": 0.09375555480683062,
+          "uHI": 0.0,
+          "io_list": [
+            709
+          ],
+          "node_number": 1,
+          "dag_id": 15,
+          "predecessors": [],
+          "successors": [],
+          "internal_dag": {
+            "root_nodes": [
+              0
+            ],
+            "sink_nodes": [
+              7
+            ],
+            "longest_path_nodes": 3,
+            "max_depth_limit": 4,
+            "edge_prob": 0.3,
+            "nodes": [
+              {
+                "node_id": 0,
+                "tag": "T15_root_N0",
+                "role": "root",
+                "cri": 1,
+                "priority": 253,
+                "eLO": 1.0088574024376709,
+                "eHI": 0.0,
+                "uLO": 0.003987578665761545,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.042531652380249446,
+                "uHI_share_in_task": 0.0,
+                "indegree": 0,
+                "outdegree": 6,
+                "predecessors": [],
+                "successors": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ]
+              },
+              {
+                "node_id": 1,
+                "tag": "T15_inner_N1",
+                "role": "inner",
+                "cri": 1,
+                "priority": 253,
+                "eLO": 3.1984232778866297,
+                "eHI": 0.0,
+                "uLO": 0.012641989240658616,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.13483989579823355,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 2,
+                "tag": "T15_inner_N2",
+                "role": "inner",
+                "cri": 1,
+                "priority": 253,
+                "eLO": 1.6599586468546785,
+                "eHI": 0.0,
+                "uLO": 0.006561101370967109,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.06998093483085117,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 3,
+                "tag": "T15_inner_N3",
+                "role": "inner",
+                "cri": 1,
+                "priority": 253,
+                "eLO": 0.27431523706474037,
+                "eHI": 0.0,
+                "uLO": 0.0010842499488724917,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.01156464756788467,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 4,
+                "tag": "T15_inner_N4",
+                "role": "inner",
+                "cri": 1,
+                "priority": 253,
+                "eLO": 1.3051205131728918,
+                "eHI": 0.0,
+                "uLO": 0.005158579103450165,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.0550215836712678,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 5,
+                "tag": "T15_inner_N5",
+                "role": "inner",
+                "cri": 1,
+                "priority": 253,
+                "eLO": 3.675981609439171,
+                "eHI": 0.0,
+                "uLO": 0.014529571578810952,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.15497291449820733,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 6,
+                "tag": "T15_inner_N6",
+                "role": "inner",
+                "cri": 1,
+                "priority": 253,
+                "eLO": 2.4991105371564717,
+                "eHI": 0.0,
+                "uLO": 0.009877907261488031,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.10535810152091778,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 7,
+                "tag": "T15_sink_N7",
+                "role": "sink",
+                "cri": 1,
+                "priority": 253,
+                "eLO": 10.098388142115892,
+                "eHI": 0.0,
+                "uLO": 0.039914577636821706,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.4257302697323882,
+                "uHI_share_in_task": 0.0,
+                "indegree": 6,
+                "outdegree": 0,
+                "predecessors": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ],
+                "successors": []
+              }
+            ]
+          }
+        },
+        {
+          "id": 16,
+          "criticality": "LO",
+          "cri": 1,
+          "priority": 197,
+          "base_priority": 0,
+          "slack": 192.61926163421083,
+          "eLO": 4.380738365789174,
+          "eHI": 0.0,
+          "dLO": 197,
+          "dHI": 197,
+          "pLO": 197,
+          "pHI": 197,
+          "uLO": 0.022237250587762304,
+          "uHI": 0.0,
+          "io_list": [
+            633
+          ],
+          "node_number": 1,
+          "dag_id": 16,
+          "predecessors": [],
+          "successors": [],
+          "internal_dag": {
+            "root_nodes": [
+              0
+            ],
+            "sink_nodes": [
+              7
+            ],
+            "longest_path_nodes": 5,
+            "max_depth_limit": 4,
+            "edge_prob": 0.3,
+            "nodes": [
+              {
+                "node_id": 0,
+                "tag": "T16_root_N0",
+                "role": "root",
+                "cri": 1,
+                "priority": 197,
+                "eLO": 0.8383170975939076,
+                "eHI": 0.0,
+                "uLO": 0.004255416739055369,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.1913643380624234,
+                "uHI_share_in_task": 0.0,
+                "indegree": 0,
+                "outdegree": 3,
+                "predecessors": [],
+                "successors": [
+                  1,
+                  2,
+                  3
+                ]
+              },
+              {
+                "node_id": 1,
+                "tag": "T16_inner_N1",
+                "role": "inner",
+                "cri": 1,
+                "priority": 197,
+                "eLO": 0.23890733787616794,
+                "eHI": 0.0,
+                "uLO": 0.0012127276034323245,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.05453586083612863,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  4
+                ]
+              },
+              {
+                "node_id": 2,
+                "tag": "T16_inner_N2",
+                "role": "inner",
+                "cri": 1,
+                "priority": 197,
+                "eLO": 2.115586940414571,
+                "eHI": 0.0,
+                "uLO": 0.010739020002104421,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.4829293063781169,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  4
+                ]
+              },
+              {
+                "node_id": 3,
+                "tag": "T16_inner_N3",
+                "role": "inner",
+                "cri": 1,
+                "priority": 197,
+                "eLO": 0.1339254031781383,
+                "eHI": 0.0,
+                "uLO": 0.0006798243816149152,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.030571422439653533,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  4
+                ]
+              },
+              {
+                "node_id": 4,
+                "tag": "T16_inner_N4",
+                "role": "inner",
+                "cri": 1,
+                "priority": 197,
+                "eLO": 0.5361342428386003,
+                "eHI": 0.0,
+                "uLO": 0.0027214936184700527,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.1223844471118096,
+                "uHI_share_in_task": 0.0,
+                "indegree": 3,
+                "outdegree": 2,
+                "predecessors": [
+                  1,
+                  2,
+                  3
+                ],
+                "successors": [
+                  5,
+                  6
+                ]
+              },
+              {
+                "node_id": 5,
+                "tag": "T16_inner_N5",
+                "role": "inner",
+                "cri": 1,
+                "priority": 197,
+                "eLO": 0.2540553408342954,
+                "eHI": 0.0,
+                "uLO": 0.0012896210194634282,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.05799372608469582,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  4
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 6,
+                "tag": "T16_inner_N6",
+                "role": "inner",
+                "cri": 1,
+                "priority": 197,
+                "eLO": 0.2556251014566053,
+                "eHI": 0.0,
+                "uLO": 0.0012975893474954582,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.058352058514353974,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  4
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 7,
+                "tag": "T16_sink_N7",
+                "role": "sink",
+                "cri": 1,
+                "priority": 197,
+                "eLO": 0.008186901596887843,
+                "eHI": 0.0,
+                "uLO": 4.155787612633423e-05,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.0018688405728181402,
+                "uHI_share_in_task": 0.0,
+                "indegree": 2,
+                "outdegree": 0,
+                "predecessors": [
+                  5,
+                  6
+                ],
+                "successors": []
+              }
+            ]
+          }
+        },
+        {
+          "id": 17,
+          "criticality": "LO",
+          "cri": 1,
+          "priority": 186,
+          "base_priority": 0,
+          "slack": 181.67748790029611,
+          "eLO": 4.322512099703897,
+          "eHI": 0.0,
+          "dLO": 186,
+          "dHI": 186,
+          "pLO": 186,
+          "pHI": 186,
+          "uLO": 0.023239312363999447,
+          "uHI": 0.0,
+          "io_list": [
+            556
+          ],
+          "node_number": 1,
+          "dag_id": 17,
+          "predecessors": [],
+          "successors": [],
+          "internal_dag": {
+            "root_nodes": [
+              0
+            ],
+            "sink_nodes": [
+              7
+            ],
+            "longest_path_nodes": 4,
+            "max_depth_limit": 4,
+            "edge_prob": 0.3,
+            "nodes": [
+              {
+                "node_id": 0,
+                "tag": "T17_root_N0",
+                "role": "root",
+                "cri": 1,
+                "priority": 186,
+                "eLO": 0.3939062654290911,
+                "eHI": 0.0,
+                "uLO": 0.002117775620586511,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.09112901394910489,
+                "uHI_share_in_task": 0.0,
+                "indegree": 0,
+                "outdegree": 3,
+                "predecessors": [],
+                "successors": [
+                  1,
+                  2,
+                  3
+                ]
+              },
+              {
+                "node_id": 1,
+                "tag": "T17_inner_N1",
+                "role": "inner",
+                "cri": 1,
+                "priority": 186,
+                "eLO": 0.4599168189676116,
+                "eHI": 0.0,
+                "uLO": 0.002472671069718342,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.10640035432153377,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 2,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  5,
+                  6
+                ]
+              },
+              {
+                "node_id": 2,
+                "tag": "T17_inner_N2",
+                "role": "inner",
+                "cri": 1,
+                "priority": 186,
+                "eLO": 0.5183223162567707,
+                "eHI": 0.0,
+                "uLO": 0.0027866791196600577,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.11991228810956414,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  5
+                ]
+              },
+              {
+                "node_id": 3,
+                "tag": "T17_inner_N3",
+                "role": "inner",
+                "cri": 1,
+                "priority": 186,
+                "eLO": 0.4371469576585341,
+                "eHI": 0.0,
+                "uLO": 0.0023502524605297534,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.10113261630626315,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 2,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  4,
+                  6
+                ]
+              },
+              {
+                "node_id": 4,
+                "tag": "T17_inner_N4",
+                "role": "inner",
+                "cri": 1,
+                "priority": 186,
+                "eLO": 0.7400442632088357,
+                "eHI": 0.0,
+                "uLO": 0.003978732597896966,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.17120698476692073,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  3
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 5,
+                "tag": "T17_inner_N5",
+                "role": "inner",
+                "cri": 1,
+                "priority": 186,
+                "eLO": 0.40186480486158666,
+                "eHI": 0.0,
+                "uLO": 0.0021605634669977776,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.09297019779056613,
+                "uHI_share_in_task": 0.0,
+                "indegree": 2,
+                "outdegree": 1,
+                "predecessors": [
+                  1,
+                  2
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 6,
+                "tag": "T17_inner_N6",
+                "role": "inner",
+                "cri": 1,
+                "priority": 186,
+                "eLO": 0.9491836919778683,
+                "eHI": 0.0,
+                "uLO": 0.005103138128913271,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.21959075419196394,
+                "uHI_share_in_task": 0.0,
+                "indegree": 2,
+                "outdegree": 1,
+                "predecessors": [
+                  1,
+                  3
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 7,
+                "tag": "T17_sink_N7",
+                "role": "sink",
+                "cri": 1,
+                "priority": 186,
+                "eLO": 0.42212698134359883,
+                "eHI": 0.0,
+                "uLO": 0.002269499899696768,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.09765779056408323,
+                "uHI_share_in_task": 0.0,
+                "indegree": 3,
+                "outdegree": 0,
+                "predecessors": [
+                  4,
+                  5,
+                  6
+                ],
+                "successors": []
+              }
+            ]
+          }
+        },
+        {
+          "id": 18,
+          "criticality": "LO",
+          "cri": 1,
+          "priority": 287,
+          "base_priority": 0,
+          "slack": 163.69230426425125,
+          "eLO": 123.30769573574875,
+          "eHI": 0.0,
+          "dLO": 287,
+          "dHI": 287,
+          "pLO": 287,
+          "pHI": 287,
+          "uLO": 0.42964353914895037,
+          "uHI": 0.0,
+          "io_list": [
+            177
+          ],
+          "node_number": 1,
+          "dag_id": 18,
+          "predecessors": [],
+          "successors": [],
+          "internal_dag": {
+            "root_nodes": [
+              0
+            ],
+            "sink_nodes": [
+              7
+            ],
+            "longest_path_nodes": 4,
+            "max_depth_limit": 4,
+            "edge_prob": 0.3,
+            "nodes": [
+              {
+                "node_id": 0,
+                "tag": "T18_root_N0",
+                "role": "root",
+                "cri": 1,
+                "priority": 287,
+                "eLO": 17.083406354810997,
+                "eHI": 0.0,
+                "uLO": 0.05952406395404529,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.13854290482745807,
+                "uHI_share_in_task": 0.0,
+                "indegree": 0,
+                "outdegree": 4,
+                "predecessors": [],
+                "successors": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "node_id": 1,
+                "tag": "T18_inner_N1",
+                "role": "inner",
+                "cri": 1,
+                "priority": 287,
+                "eLO": 17.060636144286114,
+                "eHI": 0.0,
+                "uLO": 0.05944472524141504,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.13835824311280176,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  6
+                ]
+              },
+              {
+                "node_id": 2,
+                "tag": "T18_inner_N2",
+                "role": "inner",
+                "cri": 1,
+                "priority": 287,
+                "eLO": 13.431269119504382,
+                "eHI": 0.0,
+                "uLO": 0.046798847106287046,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.10892482451612674,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  5
+                ]
+              },
+              {
+                "node_id": 3,
+                "tag": "T18_inner_N3",
+                "role": "inner",
+                "cri": 1,
+                "priority": 287,
+                "eLO": 26.42652400573654,
+                "eHI": 0.0,
+                "uLO": 0.09207848085622487,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.21431366345835534,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  5
+                ]
+              },
+              {
+                "node_id": 4,
+                "tag": "T18_inner_N4",
+                "role": "inner",
+                "cri": 1,
+                "priority": 287,
+                "eLO": 43.09247690992158,
+                "eHI": 0.0,
+                "uLO": 0.15014800317045846,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.3494711068339948,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  6
+                ]
+              },
+              {
+                "node_id": 5,
+                "tag": "T18_inner_N5",
+                "role": "inner",
+                "cri": 1,
+                "priority": 287,
+                "eLO": 1.753449891888827,
+                "eHI": 0.0,
+                "uLO": 0.006109581504839119,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.01422011725567,
+                "uHI_share_in_task": 0.0,
+                "indegree": 2,
+                "outdegree": 1,
+                "predecessors": [
+                  2,
+                  3
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 6,
+                "tag": "T18_inner_N6",
+                "role": "inner",
+                "cri": 1,
+                "priority": 287,
+                "eLO": 4.072429714228781,
+                "eHI": 0.0,
+                "uLO": 0.014189650572225716,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.03302656569753839,
+                "uHI_share_in_task": 0.0,
+                "indegree": 2,
+                "outdegree": 1,
+                "predecessors": [
+                  1,
+                  4
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 7,
+                "tag": "T18_sink_N7",
+                "role": "sink",
+                "cri": 1,
+                "priority": 287,
+                "eLO": 0.3875035953715447,
+                "eHI": 0.0,
+                "uLO": 0.0013501867434548597,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.003142574298054956,
+                "uHI_share_in_task": 0.0,
+                "indegree": 2,
+                "outdegree": 0,
+                "predecessors": [
+                  5,
+                  6
+                ],
+                "successors": []
+              }
+            ]
+          }
+        },
+        {
+          "id": 19,
+          "criticality": "LO",
+          "cri": 1,
+          "priority": 84,
+          "base_priority": 0,
+          "slack": 66.23568858898366,
+          "eLO": 17.76431141101633,
+          "eHI": 0.0,
+          "dLO": 84,
+          "dHI": 84,
+          "pLO": 84,
+          "pHI": 84,
+          "uLO": 0.2114798977501944,
+          "uHI": 0.0,
+          "io_list": [
+            286
+          ],
+          "node_number": 1,
+          "dag_id": 19,
+          "predecessors": [],
+          "successors": [],
+          "internal_dag": {
+            "root_nodes": [
+              0
+            ],
+            "sink_nodes": [
+              7
+            ],
+            "longest_path_nodes": 5,
+            "max_depth_limit": 4,
+            "edge_prob": 0.3,
+            "nodes": [
+              {
+                "node_id": 0,
+                "tag": "T19_root_N0",
+                "role": "root",
+                "cri": 1,
+                "priority": 84,
+                "eLO": 1.1429514365558988,
+                "eHI": 0.0,
+                "uLO": 0.013606564720903557,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.0643397545849771,
+                "uHI_share_in_task": 0.0,
+                "indegree": 0,
+                "outdegree": 3,
+                "predecessors": [],
+                "successors": [
+                  1,
+                  2,
+                  3
+                ]
+              },
+              {
+                "node_id": 1,
+                "tag": "T19_inner_N1",
+                "role": "inner",
+                "cri": 1,
+                "priority": 84,
+                "eLO": 0.5233188953624373,
+                "eHI": 0.0,
+                "uLO": 0.006229986849552825,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.02945900256161391,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  4
+                ]
+              },
+              {
+                "node_id": 2,
+                "tag": "T19_inner_N2",
+                "role": "inner",
+                "cri": 1,
+                "priority": 84,
+                "eLO": 0.8753095209698735,
+                "eHI": 0.0,
+                "uLO": 0.010420351440117541,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.049273484387751754,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  4
+                ]
+              },
+              {
+                "node_id": 3,
+                "tag": "T19_inner_N3",
+                "role": "inner",
+                "cri": 1,
+                "priority": 84,
+                "eLO": 7.693362318142155,
+                "eHI": 0.0,
+                "uLO": 0.09158764664454946,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.43307968094790356,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  0
+                ],
+                "successors": [
+                  4
+                ]
+              },
+              {
+                "node_id": 4,
+                "tag": "T19_inner_N4",
+                "role": "inner",
+                "cri": 1,
+                "priority": 84,
+                "eLO": 0.8895348124531129,
+                "eHI": 0.0,
+                "uLO": 0.010589700148251344,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.05007426361043627,
+                "uHI_share_in_task": 0.0,
+                "indegree": 3,
+                "outdegree": 2,
+                "predecessors": [
+                  1,
+                  2,
+                  3
+                ],
+                "successors": [
+                  5,
+                  6
+                ]
+              },
+              {
+                "node_id": 5,
+                "tag": "T19_inner_N5",
+                "role": "inner",
+                "cri": 1,
+                "priority": 84,
+                "eLO": 4.507172610583241,
+                "eHI": 0.0,
+                "uLO": 0.05365681679265762,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.2537206484563297,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  4
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 6,
+                "tag": "T19_inner_N6",
+                "role": "inner",
+                "cri": 1,
+                "priority": 84,
+                "eLO": 2.011300268787282,
+                "eHI": 0.0,
+                "uLO": 0.023944050818896216,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.11322140342236951,
+                "uHI_share_in_task": 0.0,
+                "indegree": 1,
+                "outdegree": 1,
+                "predecessors": [
+                  4
+                ],
+                "successors": [
+                  7
+                ]
+              },
+              {
+                "node_id": 7,
+                "tag": "T19_sink_N7",
+                "role": "sink",
+                "cri": 1,
+                "priority": 84,
+                "eLO": 0.12136154816233019,
+                "eHI": 0.0,
+                "uLO": 0.0014447803352658356,
+                "uHI": 0.0,
+                "uLO_share_in_task": 0.00683176202861819,
+                "uHI_share_in_task": 0.0,
+                "indegree": 2,
+                "outdegree": 0,
+                "predecessors": [
+                  5,
+                  6
+                ],
+                "successors": []
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
