@@ -104,3 +104,21 @@
     - `WF_DU`: `ratio=0.320`, `avg_runtime=0.842266s`, `inconsistent=0`
 - 结论：在该设置下三种算法均未出现一致性异常（`inconsistent=0`）；随着利用率上升，可调度率整体下降。
 
+
+## 12) 本次针对“子任务分配 + 可调度性核实执行路径”的代码核查结论
+- **子任务分配粒度**：映射入口 `_iter_mapping_units` 会优先把 `task.internal_dag.nodes` 展开成“子任务映射单元”（`unit_key=(task.id,node_id)`）；若任务没有内部 DAG，则退化为任务级单元（`unit_key=(task.id,None)`）。
+- **分配策略本质**：`FF_DU/BF_DU/WF_DU/BF_DP/WF_DP/BF_DIP` 都是“按单元逐个试放置到核心”的启发式分配；区别在于单元排序规则（按利用率或优先级）与核心选择规则（first-fit / best-fit / worst-fit / 综合评分）。
+- **核实阶段是否执行可调度性分析**：会执行。每次试放置后都会调用 `_all_mapped_dags_deadline_ok(...)`；该函数再逐 DAG 调用 `analyze_dag_partitioned_fp(...)`，其中局部 WCRT 由 `_calc_task_local_wcrt(..., wcrt_algor)` 计算（默认 `amc_rtb_wcrt`），最后检查 sink 节点 `finish<=dLO`。
+- **验证脚本中的执行位置**：`mapping_validation._is_mapping_valid(...)` 在检查“是否全映射”后，也会再次调用 `_all_mapped_dags_deadline_ok(...)` 进行可调度性核实；因此验证流程不是只看映射成功与否，而是实际执行了当前可调度性分析链路。
+- **结论**：当前实现中“子任务分配”已接入映射主流程；“可调度性分析”在**映射试探阶段**和**验证判定阶段**都会执行。
+
+## 13) 已修复：映射与可调度性分析统一到 `(task_id, node_id)` 粒度
+- 映射表 `mapping_list` 现以 `unit_key=(task_id,node_id)` 记录单元；无内部 DAG 时使用 `(task_id,None)` 兼容。
+- 放置/回退逻辑已按 unit 处理，避免“子任务粒度分配但任务粒度记录”的信息丢失。
+- DAG 可调度性分析（局部响应时间 + DAG 聚合）已按 unit 粒度进行，并以 unit 级 sink 判定截止期。
+- `mapping_validation` 的映射完整性检查已改为比较“期望 unit 集合”与“已映射 unit 集合”。
+
+## 14) 本次排查：`BF_DP` 可调度率异常偏高的原因与修正
+- 问题根因：在上一版 unit 粒度改造中，局部响应时间使用了简化固定点函数 `_unit_schedulable_response`，未走原 AMC-RTB 仿真流程，导致与主算法口径不一致，可能出现可调度率偏高。
+- 修正内容：已将 unit 粒度局部响应时间改为 `_calc_unit_local_wcrt(..., wcrt_algor)`，通过构造 unit 任务集后调用传入的 `wcrt_algor`（默认 `amc_rtb_wcrt`），恢复与原 AMC-RTB 一致的执行逻辑。
+- 影响范围：`analyze_dag_partitioned_fp` 的局部分析现在统一通过 AMC-RTB 路径执行，`BF_DP/BF_DIP/WF_DU` 在验证阶段的可调度性判定口径一致。

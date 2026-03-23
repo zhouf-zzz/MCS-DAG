@@ -21,8 +21,27 @@ def _empty_mapping():
 def _mapped_task_ids(mapping_list):
     ids = set()
     for core_tasks in mapping_list:
-        ids.update(core_tasks)
+        for unit_key in core_tasks:
+            if isinstance(unit_key, tuple):
+                ids.add(unit_key[0])
+            else:
+                ids.add(unit_key)
     return ids
+
+
+def _mapped_unit_keys(mapping_list):
+    keys = set()
+    for core_tasks in mapping_list:
+        for unit_key in core_tasks:
+            if isinstance(unit_key, tuple):
+                keys.add(unit_key)
+            else:
+                keys.add((unit_key, None))
+    return keys
+
+
+def _expected_unit_keys(task_set):
+    return {unit['unit_key'] for unit in _iter_mapping_units(task_set)}
 
 
 def _iter_mapping_units(task_set):
@@ -54,14 +73,22 @@ def _iter_mapping_units(task_set):
 
 def _place_unit(mapping_list, unit, core_id):
     task = unit['task']
-    mapping_list[core_id].append(task.id)
+    unit_key = unit['unit_key']
+    mapping_list[core_id].append(unit_key)
     task.core_list_add(core_id)
 
 
 def _undo_unit(mapping_list, unit, core_id):
     task = unit['task']
-    mapping_list[core_id].remove(task.id)
-    if task.id not in mapping_list[core_id]:
+    unit_key = unit['unit_key']
+    mapping_list[core_id].remove(unit_key)
+    has_same_task = False
+    for mapped_key in mapping_list[core_id]:
+        key_task_id = mapped_key[0] if isinstance(mapped_key, tuple) else mapped_key
+        if key_task_id == task.id:
+            has_same_task = True
+            break
+    if not has_same_task:
         task.core_list_remove(core_id)
 
 

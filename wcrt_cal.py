@@ -678,8 +678,32 @@ def get_e_new(task):
 def _get_mapped_task_ids(mapping_list):
         mapped_ids = set()
         for core_tasks in mapping_list:
-                mapped_ids.update(core_tasks)
+                for unit_key in core_tasks:
+                        if isinstance(unit_key, tuple):
+                                mapped_ids.add(unit_key[0])
+                        else:
+                                mapped_ids.add(unit_key)
         return mapped_ids
+
+
+def _normalize_unit_key(unit_key):
+        if isinstance(unit_key, tuple):
+                return unit_key
+        return (unit_key, None)
+
+
+def _mapped_units_by_core(mapping_list):
+        return [[_normalize_unit_key(unit_key) for unit_key in core_tasks] for core_tasks in mapping_list]
+
+
+def _build_unit_competition(mapping_list):
+        content = {}
+        mapped_by_core = _mapped_units_by_core(mapping_list)
+        for core_units in mapped_by_core:
+                core_set = set(core_units)
+                for unit_key in core_units:
+                        content.setdefault(unit_key, set()).update(core_set)
+        return content
 
 
 def _calc_task_local_wcrt(mapping_list, ts, task, wcrt_algor=amc_rtb_wcrt):
@@ -694,6 +718,89 @@ def _calc_task_local_wcrt(mapping_list, ts, task, wcrt_algor=amc_rtb_wcrt):
                 if content_task.pri > task.pri:
                         content_task_set_HI_pri.add(content_task)
         return wcrt_algor(ts, task, content_task_set_HI_pri)
+
+
+def _build_unit_model(ts, task_id, node_id):
+        task = ts.get_task_by_id(task_id)
+        if task is None:
+                return None
+        if node_id is None or task.internal_dag is None or node_id not in task.internal_dag.nodes:
+                return {
+                        'unit_key': (task_id, None),
+                        'task_id': task_id,
+                        'node_id': None,
+                        'pri': task.pri,
+                        'cri': task.cri,
+                        'eLO': task.eLO,
+                        'eHI': task.eHI,
+                        'dLO': task.dLO,
+                        'dHI': task.dHI,
+                        'pLO': task.pLO,
+                        'pHI': task.pHI,
+                        'predecessors': {(pred_id, None) for pred_id in task.predecessors},
+                        'successors': {(succ_id, None) for succ_id in task.successors},
+                }
+
+        node = task.internal_dag.nodes[node_id]
+        eLO = node.eLO if node.eLO > 0 else node.uLO * task.pLO
+        eHI = node.eHI if node.eHI > 0 else node.uHI * task.pHI
+        return {
+                'unit_key': (task_id, node_id),
+                'task_id': task_id,
+                'node_id': node_id,
+                'pri': task.pri,
+                'cri': task.cri,
+                'eLO': eLO,
+                'eHI': eHI,
+                'dLO': task.dLO,
+                'dHI': task.dHI,
+                'pLO': task.pLO,
+                'pHI': task.pHI,
+                'predecessors': {(task_id, pred) for pred in node.predecessors},
+                'successors': {(task_id, succ) for succ in node.successors},
+        }
+
+
+class _UnitTask:
+        __slots__ = (
+                'id', 'eLO', 'eHI', 'dLO', 'dHI', 'pLO', 'pHI', 'pri',
+                'cri', 'predecessors', 'successors', 'resp', 'release_time'
+        )
+
+        def __init__(self, unit_model):
+                self.id = unit_model['unit_key']
+                self.eLO = unit_model['eLO']
+                self.eHI = unit_model['eHI']
+                self.dLO = unit_model['dLO']
+                self.dHI = unit_model['dHI']
+                self.pLO = unit_model['pLO']
+                self.pHI = unit_model['pHI']
+                self.pri = unit_model['pri']
+                self.cri = unit_model['cri']
+                self.predecessors = set(unit_model['predecessors'])
+                self.successors = set(unit_model['successors'])
+                self.resp = 0
+                self.release_time = 0
+
+        def __hash__(self):
+                return hash(self.id)
+
+
+class _UnitTaskSet:
+        __slots__ = ('HI', 'LO')
+
+        def __init__(self, tasks):
+                self.LO = set(tasks)
+                self.HI = {task for task in tasks if task.cri == 0}
+
+
+def _calc_unit_local_wcrt(unit_model, hp_units, wcrt_algor):
+        target = _UnitTask(unit_model)
+        hp_tasks = {_UnitTask(hp) for hp in hp_units}
+        tasks = set(hp_tasks)
+        tasks.add(target)
+        unit_task_set = _UnitTaskSet(tasks)
+        return wcrt_algor(unit_task_set, target, tasks)
 
 
 def _calc_dag_finish_time(task, dag_task_dict, local_wcrt_map, memo):
@@ -748,9 +855,17 @@ def analyze_dag_partitioned_fp(mapping_list, ts, dag_id, wcrt_algor=amc_rtb_wcrt
         当前版本忽略通信开销，DAG 截止期口径为：每个 sink 节点满足 finish<=sink.dLO。
         """
         task_set = ts.HI.union(ts.LO)
-        mapped_ids = _get_mapped_task_ids(mapping_list)
-        dag_tasks = [task for task in task_set if task.dag_id == dag_id and task.id in mapped_ids]
-        if not dag_tasks:
+        mapped_units = _build_unit_competition(mapping_list)
+        dag_task_ids = {task.id for task in task_set if task.dag_id == dag_id}
+        dag_units = []
+        for unit_key in mapped_units.keys():
+                task_id, node_id = unit_key
+                if task_id in dag_task_ids:
+                        model = _build_unit_model(ts, task_id, node_id)
+                        if model is not None:
+                                dag_units.append(model)
+
+        if not dag_units:
                 return {
                         'schedulable': True,
                         'dag_tasks': [],
@@ -760,52 +875,86 @@ def analyze_dag_partitioned_fp(mapping_list, ts, dag_id, wcrt_algor=amc_rtb_wcrt
                 }
 
         local_wcrt_map = {}
-        for task in dag_tasks:
-                wcrt = _calc_task_local_wcrt(mapping_list, ts, task, wcrt_algor)
-                local_wcrt_map[task.id] = wcrt
-                task.wcrt_intertask = wcrt
+        unit_by_key = {unit['unit_key']: unit for unit in dag_units}
+        for unit in dag_units:
+                unit_key = unit['unit_key']
+                competitors = mapped_units.get(unit_key, set())
+                hp_units = []
+                for competitor_key in competitors:
+                        if competitor_key == unit_key:
+                                continue
+                        competitor = unit_by_key.get(competitor_key)
+                        if competitor is None:
+                                competitor = _build_unit_model(ts, competitor_key[0], competitor_key[1])
+                        if competitor is None:
+                                continue
+                        if competitor['pri'] > unit['pri']:
+                                hp_units.append(competitor)
+                wcrt = _calc_unit_local_wcrt(unit, hp_units, wcrt_algor)
+                local_wcrt_map[unit_key] = wcrt
+                parent_task = ts.get_task_by_id(unit['task_id'])
+                if parent_task is not None:
+                        parent_task.wcrt_intertask = max(parent_task.wcrt_intertask, wcrt if wcrt != -1 else 0)
                 if wcrt == -1:
-                        task.final_wcrt = -1
+                        if parent_task is not None:
+                                parent_task.final_wcrt = -1
                         return {
                                 'schedulable': False,
-                                'dag_tasks': dag_tasks,
+                                'dag_tasks': dag_units,
                                 'local_wcrt_map': local_wcrt_map,
                                 'finish_map': {},
                                 'sink_ids': [],
                         }
 
-        order = _topo_order_mapped_dag(dag_tasks)
-        if not order:
+        indegree = {unit['unit_key']: 0 for unit in dag_units}
+        for unit in dag_units:
+                for pred_key in unit['predecessors']:
+                        if pred_key in indegree:
+                                indegree[unit['unit_key']] += 1
+        queue = [k for k, deg in indegree.items() if deg == 0]
+        order = []
+        while queue:
+                current = queue.pop(0)
+                order.append(current)
+                for succ_key in unit_by_key[current]['successors']:
+                        if succ_key not in indegree:
+                                continue
+                        indegree[succ_key] -= 1
+                        if indegree[succ_key] == 0:
+                                queue.append(succ_key)
+
+        if len(order) != len(dag_units):
                 return {
                         'schedulable': False,
-                        'dag_tasks': dag_tasks,
+                        'dag_tasks': dag_units,
                         'local_wcrt_map': local_wcrt_map,
                         'finish_map': {},
                         'sink_ids': [],
                 }
 
-        task_by_id = {task.id: task for task in dag_tasks}
         finish_map = {}
-        for task_id in order:
-                task = task_by_id[task_id]
+        for unit_key in order:
+                unit = unit_by_key[unit_key]
                 pred_finish = 0
-                for pred_id in task.predecessors:
-                        if pred_id in finish_map:
-                                pred_finish = max(pred_finish, finish_map[pred_id])
-                finish_map[task_id] = local_wcrt_map[task_id] + pred_finish
-                task.final_wcrt = finish_map[task_id]
+                for pred_key in unit['predecessors']:
+                        if pred_key in finish_map:
+                                pred_finish = max(pred_finish, finish_map[pred_key])
+                finish_map[unit_key] = local_wcrt_map[unit_key] + pred_finish
+                parent_task = ts.get_task_by_id(unit['task_id'])
+                if parent_task is not None:
+                        parent_task.final_wcrt = max(parent_task.final_wcrt, finish_map[unit_key])
 
-        mapped_id_set = set(task_by_id.keys())
+        mapped_unit_set = set(unit_by_key.keys())
         sink_ids = [
-                task.id for task in dag_tasks
-                if len(set(task.successors).intersection(mapped_id_set)) == 0
+                unit['unit_key'] for unit in dag_units
+                if len(set(unit['successors']).intersection(mapped_unit_set)) == 0
         ]
-        for sink_id in sink_ids:
-                sink = task_by_id[sink_id]
-                if finish_map[sink_id] > sink.dLO:
+        for sink_key in sink_ids:
+                sink = unit_by_key[sink_key]
+                if finish_map[sink_key] > sink['dLO']:
                         return {
                                 'schedulable': False,
-                                'dag_tasks': dag_tasks,
+                                'dag_tasks': dag_units,
                                 'local_wcrt_map': local_wcrt_map,
                                 'finish_map': finish_map,
                                 'sink_ids': sink_ids,
@@ -813,7 +962,7 @@ def analyze_dag_partitioned_fp(mapping_list, ts, dag_id, wcrt_algor=amc_rtb_wcrt
 
         return {
                 'schedulable': True,
-                'dag_tasks': dag_tasks,
+                'dag_tasks': dag_units,
                 'local_wcrt_map': local_wcrt_map,
                 'finish_map': finish_map,
                 'sink_ids': sink_ids,
@@ -833,15 +982,16 @@ def cal_wcrt(mapping_list, ts, task, wcrt_algor = amc_rtb_wcrt):
                 return
 
         analysis = analyze_dag_partitioned_fp(mapping_list, ts, task.dag_id, wcrt_algor)
-        if task.id not in analysis['local_wcrt_map']:
+        unit_key = (task.id, None)
+        if unit_key not in analysis['local_wcrt_map']:
                 task.wcrt_intertask = 0
                 task.final_wcrt = 0
                 return
 
-        task.wcrt_intertask = analysis['local_wcrt_map'][task.id]
+        task.wcrt_intertask = analysis['local_wcrt_map'][unit_key]
         if task.wcrt_intertask == -1:
                 task.final_wcrt = -1
                 return
-        task.final_wcrt = analysis['finish_map'][task.id]
+        task.final_wcrt = analysis['finish_map'][unit_key]
 
         
