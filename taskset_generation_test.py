@@ -130,7 +130,7 @@ def analyze_taskset(ts):
 
 def main():
     parser = argparse.ArgumentParser(description="检查 Drs_gengerate 生成任务集的结构一致性")
-    parser.add_argument("--task-number", type=int, default=10)
+    parser.add_argument("--task-number", type=int, default=5)
     parser.add_argument("--node-number", type=int, default=4)
     parser.add_argument("--system-utilization", type=float, default=2.0)
     parser.add_argument("--cf", type=float, default=2)

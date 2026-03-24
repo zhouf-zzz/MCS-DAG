@@ -714,32 +714,17 @@ class Drs_gengerate(MCTaskSet):
         3) 子任务入度<=3、出度<=2；
         4) 最短路径（按节点数）>=3。
         """
-        min_nodes, max_nodes = subtask_size_range
-        min_nodes = max(3, min_nodes)
-        max_nodes = max(min_nodes, max_nodes)
-
         max_retry = 80
         for _ in range(max_retry):
-            node_count = random.randint(min_nodes, max_nodes)
-            depth_limit = max(2, int(ceil(node_count * depth_ratio)))
+            # 最大深度（层数）改为 [5, 8] 均匀随机
+            level_count = random.randint(5, 8)
+            depth_limit = level_count
 
-            # 选择层数（>=3，且不超过节点数），首层/末层固定单节点
-            max_levels = min(node_count, max(3, depth_limit + 1))
-            level_count = random.randint(3, max_levels)
-
-            # 生成每层节点数并确保相邻层容量可满足 in<=3 / out<=2
-            counts = None
-            for _part_retry in range(120):
-                cur = [1] * level_count
-                remain = node_count - level_count
-                for _ in range(remain):
-                    pos = random.randint(1, level_count - 2)
-                    cur[pos] += 1
-
-                counts = cur
-                break
-            if counts is None:
-                continue
+            # 每层节点数改为 [1, 6] 均匀随机；为保持“单根单汇”约束，首末层固定为 1
+            counts = [1 for _ in range(level_count)]
+            for lv in range(1, level_count - 1):
+                counts[lv] = random.randint(1, 6)
+            node_count = sum(counts)
 
             dag = TaskInternalDAG(task_id=task.id, max_depth_limit=depth_limit, edge_prob=edge_prob)
             for node_id in range(node_count):
