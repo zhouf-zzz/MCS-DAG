@@ -2,7 +2,7 @@ import random
 from wcrt_cal import *
 
 # 线性核心模型：不再使用二维行/列拓扑
-node_number = 4
+node_number = 8
 MAX = 1000000000000
 
 
@@ -213,6 +213,122 @@ def _dag_criticality_impact(task_by_id, mapped_ids, task, target_core):
             impact += 1.0
 
     return impact
+
+
+def _unit_successors(unit, existing_keys):
+    task = unit['task']
+    task_id, node_id = unit['unit_key']
+    succ = set()
+    if node_id is None:
+        succ = {(succ_id, None) for succ_id in getattr(task, 'successors', set())}
+    else:
+        dag = getattr(task, 'internal_dag', None)
+        if dag is not None and node_id in dag.nodes:
+            succ = {(task_id, succ_id) for succ_id in dag.nodes[node_id].successors}
+    return [k for k in succ if k in existing_keys]
+
+
+def _core_hp_interference_score_units(core_unit_keys, task_by_id, task):
+    score = 0.0
+    hp_task_ids = set()
+    for unit_key in core_unit_keys:
+        if isinstance(unit_key, tuple):
+            hp_task_ids.add(unit_key[0])
+        else:
+            hp_task_ids.add(unit_key)
+    for task_id in hp_task_ids:
+        core_task = task_by_id.get(task_id)
+        if core_task is None:
+            continue
+        if core_task.pri > task.pri:
+            score += max(_task_u_lo(core_task), _task_u_hi(core_task))
+    return score
+
+
+def HEFT_MC(
+    ts,
+    lambda_hi=0.7,
+    comm_penalty=0.05,
+    hi_boost=0.10,
+    beta_hp=0.20,
+    wcrt_algor=amc_rtb_wcrt,
+):
+    """
+    HEFT_MC（Mixed-Criticality HEFT）:
+    1) 计算子任务 upward-rank（rank_mc）并降序；
+    2) 逐单元枚举核心，选择“可行且 score 最小”的核心。
+
+    score(core) = EFT_proxy + beta_hp * HP_interference
+    其中 EFT_proxy 采用 max(U_LO, U_HI) 作为完成时间代理。
+    """
+    task_set = ts.HI.union(ts.LO)
+    units = _iter_mapping_units(task_set)
+    if not units:
+        return _empty_mapping()
+
+    existing_keys = {u['unit_key'] for u in units}
+    unit_by_key = {u['unit_key']: u for u in units}
+
+    succ_map = {}
+    for unit in units:
+        succ_map[unit['unit_key']] = _unit_successors(unit, existing_keys)
+
+    def _comp_cost(unit):
+        base = lambda_hi * unit['uHI'] + (1.0 - lambda_hi) * unit['uLO']
+        if unit['task'].cri == 0:
+            base *= (1.0 + hi_boost)
+        return base
+
+    memo = {}
+
+    def _rank(unit_key):
+        if unit_key in memo:
+            return memo[unit_key]
+        unit = unit_by_key[unit_key]
+        succ = succ_map.get(unit_key, [])
+        if not succ:
+            value = _comp_cost(unit)
+        else:
+            value = _comp_cost(unit) + max(comm_penalty + _rank(s) for s in succ)
+        memo[unit_key] = value
+        return value
+
+    ranked_units = sorted(
+        units,
+        key=lambda u: (_rank(u['unit_key']), u['pri']),
+        reverse=True,
+    )
+
+    mapping_list = _empty_mapping()
+    core_uti_list_LO = [0.0 for _ in range(node_number)]
+    core_uti_list_HI = [0.0 for _ in range(node_number)]
+    task_by_id = {task.id: task for task in task_set}
+
+    for unit in ranked_units:
+        candidates = []
+        for core_id in range(node_number):
+            lo = core_uti_list_LO[core_id] + unit['uLO']
+            hi = core_uti_list_HI[core_id] + unit['uHI']
+            eft_proxy = max(lo, hi)
+            hp_interference = _core_hp_interference_score_units(mapping_list[core_id], task_by_id, unit['task'])
+
+            _place_unit(mapping_list, unit, core_id)
+            feasible = _all_mapped_dags_deadline_ok(mapping_list, ts, wcrt_algor)
+            _undo_unit(mapping_list, unit, core_id)
+
+            if feasible:
+                score = eft_proxy + beta_hp * hp_interference
+                candidates.append((core_id, score, lo, hi))
+
+        if not candidates:
+            return False
+
+        core_id, _, lo, hi = min(candidates, key=lambda x: x[1])
+        _place_unit(mapping_list, unit, core_id)
+        core_uti_list_LO[core_id] = lo
+        core_uti_list_HI[core_id] = hi
+
+    return mapping_list
 
 
 def BF_DIP(ts, alpha=0.4, beta=0.4, gamma=0.2, wcrt_algor=amc_rtb_wcrt):

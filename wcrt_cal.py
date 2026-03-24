@@ -5,7 +5,7 @@ MAX = 10000000000000000
 L_R = 0.001
 L_W = 0.00001
 unit_time = 10
-node_number = 4
+node_number = 8
 '''
 #判断抢占当前任务的任务是否会被其他任务抢占
 def judge_preempt(mapping_list, task_to_judge, task_current_id, ts):
