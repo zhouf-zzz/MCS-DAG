@@ -510,23 +510,17 @@ class Drs_gengerate(MCTaskSet):
         MCTaskSet.__init__(self)
         # 高关键度任务的个数
         number_HItasks = (int)(numTask * CP)
-        core_nums = []
-        for i in range(numTask):
-            core_nums.append(1)
-        #DRS生成HItask在HI模式下利用率——sumU_HI；sumU_HI的值不能大于处理器个数，一旦大于处理器个数就意味着HImode下不可能在处理器上调度
-        sumU_HI = min(numCore,sumU * CF * CP ,number_HItasks-0.00001)
+        core_nums = [1 for _ in range(numTask)]
+        # DRS生成HItask在HI模式下利用率——sumU_HI（不再限制单任务利用率上界）
+        sumU_HI = sumU * CF * CP
         if number_HItasks==0:
             u_HI_HI = []
         elif number_HItasks==1:
             u_HI_HI = [sumU_HI]
         else:
-            #u_HI_HI = drs(number_HItasks, sumU_HI, [1] * number_HItasks, None) if number_HItasks>0 else []
-            u_HI_HI = drs(number_HItasks, sumU_HI, core_nums[0:number_HItasks], None) if number_HItasks>0 else []
-        #DRS生成所有任务在LO模式下利用率
-        u_LO_upperbound = core_nums[:]
-        for i in range(len(u_HI_HI)):u_LO_upperbound[i]=u_HI_HI[i]
-        #print(sum(u_LO_upperbound),sumU)
-        u_LO = drs(numTask, sumU,u_LO_upperbound, None)
+            u_HI_HI = drs(number_HItasks, sumU_HI, None, None) if number_HItasks>0 else []
+        # DRS生成所有任务在LO模式下利用率（不再限制单任务利用率上界）
+        u_LO = drs(numTask, sumU, None, None)
 
         for i in range(numTask):
             ri = random.uniform(log(10), log(1000 + 1))
@@ -812,9 +806,9 @@ class Drs_gengerate(MCTaskSet):
         node_ids = sorted(task.internal_dag.nodes.keys())
         n = len(node_ids)
 
-        u_lo_list = drs(n, task.uLO, [1.0] * n, None)
+        u_lo_list = drs(n, task.uLO, [0.8] * n, None)
         if task.cri == 0:
-            u_hi_list = drs(n, task.uHI, [1.0] * n, u_lo_list)
+            u_hi_list = drs(n, task.uHI, [0.8] * n, u_lo_list)
         else:
             u_hi_list = [0.0] * n
 

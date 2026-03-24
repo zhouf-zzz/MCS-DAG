@@ -104,7 +104,7 @@ def generate_single_taskset(args):
 def parse_args():
     parser = argparse.ArgumentParser(description="批量生成随机混合关键度任务集并保存到 JSON 文件")
     parser.add_argument("--count", type=int, default=10, help="生成任务集的数量")
-    parser.add_argument("--task-number", type=int, default=5, help="每个任务集中的任务数量")
+    parser.add_argument("--task-number", type=int, default=6, help="每个任务集中的任务数量")
     parser.add_argument("--node-number", type=int, default=4, help="处理器核数")
     parser.add_argument("--system-utilization", type=float, default=2.0, help="系统总利用率")
     parser.add_argument("--cf", type=float, default=2.0, help="高关键度任务在 HI 模式下的放大因子")
