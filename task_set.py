@@ -528,6 +528,9 @@ class Drs_gengerate(MCTaskSet):
             eLO = u_LO[i] * pHI
             eHI = u_HI_HI[i] * pHI if i<number_HItasks else 0
             cri = 0 if i<number_HItasks else 1
+            # 保证 HI 任务满足 uHI > uLO，避免后续内部 DRS 以 uLO 作为 lower_constraints 时无解。
+            if cri == 0 and eHI <= eLO:
+                eHI = eLO * 1.001
             T = MCTask(i,eLO/core_nums[i],eHI/core_nums[i],pHI,pHI,pHI,pHI,cri)
             #T = MCTask(i+1,eLO,eHI,pHI,pHI,pHI,pHI,core_nums[i],cri)
             for i in range(T.node_number):
