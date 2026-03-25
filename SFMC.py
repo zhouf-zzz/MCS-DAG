@@ -136,10 +136,9 @@ def compute_SN(task: Any, strict: bool = True) -> float:
     t = validate_task_params(task, strict=strict)
 
     # NOTE:
-    # To match the paper example used in reproduction, the branch condition
-    # is evaluated against the NS window workload density C_N / D_vir.
-    # If the task can fit as a sequential container in [0, D_vir], use C_N / D;
-    # otherwise use the semi-federated parallel-load formula.
+    # For the NS-mapping stage, the deciding density is measured in the
+    # virtual-deadline window [0, D_vir]. This matches the paper example
+    # where C_N=6, D_vir=5 => high-util branch and S_N=1.5.
     uN_window = t.C_N / t.D_vir
     if uN_window < 1.0:
         return max(0.0, t.C_N / t.D)
