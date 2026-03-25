@@ -1,3 +1,4 @@
+import importlib.util
 import unittest
 
 from sfmc_random_validation import prepare_task_for_sfmc, validate_random_tasksets
@@ -36,6 +37,7 @@ class TestSFMCRandomValidationHelpers(unittest.TestCase):
         self.assertAlmostEqual(t.L_O, 5.0)
         self.assertAlmostEqual(t.D_vir, 5.0)
 
+    @unittest.skipUnless(importlib.util.find_spec("numpy") is not None, "requires numpy")
     def test_validate_counts_only_legal_tasksets(self):
         summary = validate_random_tasksets(
             task_number=4,
@@ -44,7 +46,6 @@ class TestSFMCRandomValidationHelpers(unittest.TestCase):
             uti_start=0.2,
             uti_step=0.1,
             uti_points=1,
-            run_runtime=False,
         )
         self.assertEqual(len(summary["generation_attempts"]), 1)
         self.assertGreaterEqual(summary["generation_attempts"][0], 1)

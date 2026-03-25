@@ -51,16 +51,24 @@ class TestSFMCMapTaskset(unittest.TestCase):
     def test_separate_ns_cs_feasibility(self):
         # Task 1: paper HI example => S_N=1.5, S_O=1.5
         t1 = _SimpleTask(1, 0, 6, 16, 3, 7, 5, 13)
-        # Task 2: LO example => S_N=0.4, S_O=0.0
+        # Task 2: LO example => S_N=0.8, S_O=0.0
         t2 = _SimpleTask(2, 1, 4, 4, 1, 1, 5, 10)
 
         result = map_taskset([t1, t2], m=3, strict=True)
 
-        self.assertAlmostEqual(result["total_SN"], 1.9, places=9)
+        self.assertAlmostEqual(result["total_SN"], 2.3, places=9)
         self.assertAlmostEqual(result["total_SO"], 1.5, places=9)
         self.assertTrue(result["feasible_ns"])
         self.assertTrue(result["feasible_cs"])
         self.assertTrue(result["feasible"])
+
+    def test_hi_low_critical_utilization_branch(self):
+        # u_O = (C_O - S_N * D_vir) / (D - D_vir) = (10 - 1*4) / 8 = 0.75 <= 1
+        # so S_O should use the low-utilization branch and equal 0.75.
+        t = _SimpleTask(3, 0, 4, 10, 1, 1, 4, 12)
+        result = map_task(t, m=2, strict=True)
+        self.assertAlmostEqual(result["S_N"], 1.0, places=9)
+        self.assertAlmostEqual(result["S_O"], 0.75, places=9)
 
 
 if __name__ == "__main__":

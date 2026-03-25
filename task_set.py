@@ -508,43 +508,153 @@ class Drs_gengerate(MCTaskSet):
 
     def __init__(self, numTask, sumU, CF, CP, numCore=1, dag_size_range=(3, 6), edge_prob=0.4, internal_subtask_enable=True, internal_subtask_size_range=(5, 8), internal_edge_prob=0.3, internal_depth_ratio=0.5):
         MCTaskSet.__init__(self)
-        # 高关键度任务的个数
-        number_HItasks = (int)(numTask * CP)
-        core_nums = [1 for _ in range(numTask)]
-        # DRS生成HItask在HI模式下利用率——sumU_HI（不再限制单任务利用率上界）
-        sumU_HI = sumU * CF * CP
-        if number_HItasks==0:
-            u_HI_HI = []
-        elif number_HItasks==1:
-            u_HI_HI = [sumU_HI]
-        else:
-            u_HI_HI = drs(number_HItasks, sumU_HI, None, None) if number_HItasks>0 else []
-        # DRS生成所有任务在LO模式下利用率（不再限制单任务利用率上界）
-        u_LO = drs(numTask, sumU, None, None)
+        self._sfmc_num_core = numCore
+        self._sfmc_b = (3.67 * float(numCore) / float(numCore - 1)) if numCore > 1 else None
+        max_retry = 200
+        for _ in range(max_retry):
+            self.clear()
+            # 高关键度任务的个数
+            number_HItasks = (int)(numTask * CP)
+            core_nums = [1 for _ in range(numTask)]
+            # DRS生成HItask在HI模式下利用率——sumU_HI（不再限制单任务利用率上界）
+            sumU_HI = sumU * CF * CP
+            if number_HItasks == 0:
+                u_HI_HI = []
+            elif number_HItasks == 1:
+                u_HI_HI = [sumU_HI]
+            else:
+                hi_upper = [2.0 for _ in range(number_HItasks)]
+                u_HI_HI = drs(number_HItasks, sumU_HI, hi_upper, None) if number_HItasks > 0 else []
+            # DRS生成所有任务在LO模式下利用率（不再限制单任务利用率上界）
+            lo_upper = [1.0 for _ in range(numTask)]
+            u_LO = drs(numTask, sumU, lo_upper, None)
 
-        for i in range(numTask):
-            ri = random.uniform(log(10), log(1000 + 1))
-            pHI = int(exp(ri) // 1) * 1
-            eLO = u_LO[i] * pHI
-            eHI = u_HI_HI[i] * pHI if i<number_HItasks else 0
-            cri = 0 if i<number_HItasks else 1
-            # 保证 HI 任务满足 uHI > uLO，避免后续内部 DRS 以 uLO 作为 lower_constraints 时无解。
-            if cri == 0 and eHI <= eLO:
-                eHI = eLO * 1.001
-            T = MCTask(i,eLO/core_nums[i],eHI/core_nums[i],pHI,pHI,pHI,pHI,cri)
-            #T = MCTask(i+1,eLO,eHI,pHI,pHI,pHI,pHI,core_nums[i],cri)
-            for i in range(T.node_number):
+            for task_idx in range(numTask):
+                ri = random.uniform(log(10), log(1000 + 1))
+                pHI = int(exp(ri) // 1) * 1
+                eLO = u_LO[task_idx] * pHI
+                eHI = u_HI_HI[task_idx] * pHI if task_idx < number_HItasks else 0
+                cri = 0 if task_idx < number_HItasks else 1
+                # 保证 HI 任务满足 uHI > uLO，避免后续内部 DRS 以 uLO 作为 lower_constraints 时无解。
+                if cri == 0 and eHI <= eLO:
+                    eHI = eLO * 1.001
+                task = MCTask(task_idx, eLO / core_nums[task_idx], eHI / core_nums[task_idx], pHI, pHI, pHI, pHI, cri)
+                for _ in range(task.node_number):
                     io = random.randint(10, 1000)
-                    T.io_list.append(io)
-            self.add(T, T.cri)
-        self._build_task_dags(dag_size_range=dag_size_range, edge_prob=edge_prob)
+                    task.io_list.append(io)
+                self.add(task, task.cri)
+            self._build_task_dags(dag_size_range=dag_size_range, edge_prob=edge_prob)
 
-        if internal_subtask_enable:
-            self.generate_two_level_tasksets(
-                subtask_size_range=internal_subtask_size_range,
-                edge_prob=internal_edge_prob,
-                depth_ratio=internal_depth_ratio,
-            )
+            if internal_subtask_enable:
+                self.generate_two_level_tasksets(
+                    subtask_size_range=internal_subtask_size_range,
+                    edge_prob=internal_edge_prob,
+                    depth_ratio=internal_depth_ratio,
+                )
+
+            if self._apply_sfmc_constraints(numCore):
+                return
+
+        raise ValueError(f"Failed to generate an SFMC-constrained taskset after {max_retry} retries")
+
+    def _critical_path_weight(self, task: MCTask, mode: str) -> float:
+        dag = task.internal_dag
+        if dag is None or not dag.nodes:
+            return float(task.eLO if mode == "NS" else task.eHI)
+
+        node_ids = sorted(dag.nodes.keys())
+        indeg = {nid: len(dag.nodes[nid].predecessors) for nid in node_ids}
+        queue = sorted([nid for nid in node_ids if indeg[nid] == 0])
+        topo = []
+        while queue:
+            current = queue.pop(0)
+            topo.append(current)
+            for succ_id in dag.nodes[current].successors:
+                indeg[succ_id] -= 1
+                if indeg[succ_id] == 0:
+                    queue.append(succ_id)
+                    queue.sort()
+        if len(topo) != len(node_ids):
+            return -1.0
+
+        dist = {}
+        for nid in topo:
+            wcet = float(dag.nodes[nid].eLO if mode == "NS" else dag.nodes[nid].eHI)
+            preds = dag.nodes[nid].predecessors
+            if not preds:
+                dist[nid] = wcet
+            else:
+                dist[nid] = max(dist[p] for p in preds) + wcet
+        return max(dist.values()) if dist else 0.0
+
+    def _apply_sfmc_constraints(self, m: int) -> bool:
+        if m <= 1:
+            return False
+
+        b = 3.67 * float(m) / float(m - 1)
+        if b <= 1.0:
+            return False
+
+        for task in self.LO:
+            task.C_N = float(task.eLO)
+            task.C_O = float(task.eHI) if task.cri == 0 else 0.0
+            task.D = float(task.dLO)
+            task.D_vir = task.D / (b - 1.0)
+
+            if task.internal_dag is None or not task.internal_dag.nodes:
+                ns_cap = max(1e-12, task.D_vir * 0.5)
+                task.L_N = min(task.C_N, ns_cap)
+                if task.cri == 0:
+                    cs_cap = max(1e-12, (task.D - task.D_vir) * 0.5)
+                    task.L_O = min(task.C_O, cs_cap)
+                else:
+                    task.L_O = 0.0
+            else:
+                task.L_N = self._critical_path_weight(task, "NS")
+                task.L_O = self._critical_path_weight(task, "CS") if task.cri == 0 else 0.0
+
+            if task.L_N <= 0:
+                return False
+            if task.cri == 0 and task.L_O <= 0:
+                return False
+
+            # 约束改为“最长路径执行时间不高于窗口上界”。
+            if task.L_N - task.D_vir > 1e-12:
+                return False
+            if task.cri == 0 and (task.L_O - (task.D - task.D_vir) > 1e-12):
+                return False
+
+            u_n = task.C_N / task.D_vir
+            if u_n <= 1.0:
+                s_n = u_n
+            else:
+                denom_n = task.D_vir - task.L_N
+                if denom_n <= 0:
+                    return False
+                s_n = (task.C_N - task.L_N) / denom_n
+            if s_n > m:
+                return False
+            task.sfmc_SN = max(0.0, float(s_n))
+
+            if task.cri == 0:
+                denom_uo = task.D - task.D_vir
+                if denom_uo <= 0:
+                    return False
+                u_o = (task.C_O - task.sfmc_SN * task.D_vir) / denom_uo
+                if u_o <= 1.0:
+                    s_o = u_o
+                else:
+                    denom_o = task.D - task.D_vir - task.L_O
+                    if denom_o <= 0:
+                        return False
+                    s_o = (task.C_O - task.sfmc_SN * task.D_vir - task.L_O) / denom_o
+                if s_o > m:
+                    return False
+                task.sfmc_SO = max(0.0, float(s_o))
+            else:
+                task.sfmc_SO = 0.0
+
+        return True
 
     # ===== 论文方案改造（任务内 DAG 两层生成） =====
     def _add_internal_edge(self, dag: TaskInternalDAG, src_id: int, dst_id: int):
@@ -713,14 +823,15 @@ class Drs_gengerate(MCTaskSet):
         """
         max_retry = 80
         for _ in range(max_retry):
-            # 最大深度（层数）改为 [5, 8] 均匀随机
-            level_count = random.randint(5, 8)
+            # 为了提高高利用率下生成可行任务集的概率，压缩深度并增加并行度。
+            # 层数使用 [3, 5]，在保持最短路径>=3 的同时降低关键路径执行量。
+            level_count = random.randint(3, 5)
             depth_limit = level_count
 
-            # 每层节点数改为 [1, 6] 均匀随机；为保持“单根单汇”约束，首末层固定为 1
+            # 每层节点数改为 [2, 8]（首末层固定 1），提高并行潜力。
             counts = [1 for _ in range(level_count)]
             for lv in range(1, level_count - 1):
-                counts[lv] = random.randint(1, 6)
+                counts[lv] = random.randint(2, 8)
             node_count = sum(counts)
 
             dag = TaskInternalDAG(task_id=task.id, max_depth_limit=depth_limit, edge_prob=edge_prob)
@@ -809,18 +920,45 @@ class Drs_gengerate(MCTaskSet):
         node_ids = sorted(task.internal_dag.nodes.keys())
         n = len(node_ids)
 
-        u_lo_list = drs(n, task.uLO, [0.8] * n, None)
-        if task.cri == 0:
-            u_hi_list = drs(n, task.uHI, [0.8] * n, u_lo_list)
-        else:
-            u_hi_list = [0.0] * n
+        d_vir_limit = None
+        hi_window_limit = None
+        if self._sfmc_b is not None and self._sfmc_b > 1.0:
+            d_vir_limit = float(task.dLO) / (self._sfmc_b - 1.0)
+            hi_window_limit = float(task.dLO) - d_vir_limit
 
-        for idx, node_id in enumerate(node_ids):
-            node = task.internal_dag.nodes[node_id]
-            node.uLO = float(u_lo_list[idx])
-            node.uHI = float(u_hi_list[idx])
-            node.eLO = node.uLO * task.pLO
-            node.eHI = node.uHI * task.pHI
+        max_retry = 80
+        assigned = False
+        for _ in range(max_retry):
+            u_lo_list = drs(n, task.uLO, [0.8] * n, None)
+            if task.cri == 0:
+                u_hi_list = drs(n, task.uHI, [0.8] * n, u_lo_list)
+            else:
+                u_hi_list = [0.0] * n
+
+            for idx, node_id in enumerate(node_ids):
+                node = task.internal_dag.nodes[node_id]
+                node.uLO = float(u_lo_list[idx])
+                node.uHI = float(u_hi_list[idx])
+                node.eLO = node.uLO * task.pLO
+                node.eHI = node.uHI * task.pHI
+
+            if d_vir_limit is None:
+                assigned = True
+                break
+
+            l_n = self._critical_path_weight(task, "NS")
+            if l_n - d_vir_limit > 1e-12:
+                continue
+            if task.cri == 0:
+                l_o = self._critical_path_weight(task, "CS")
+                if l_o - hi_window_limit > 1e-12:
+                    continue
+            assigned = True
+            break
+
+        if not assigned:
+            # 回退到最近一次分配结果，交由外层任务集约束筛选是否接受该样本。
+            return
 
         # 更新 tag：标注 root/sink/inner
         root_set = set(task.internal_dag.root_nodes)
