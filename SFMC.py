@@ -130,18 +130,11 @@ def validate_task_params(task: Any, strict: bool = True) -> _TaskView:
     return t
 
 
-
-def compute_SN(task: Any, strict: bool = True) -> float:
-    """Compute normal-state mapping speed S_N for a task."""
-    t = validate_task_params(task, strict=strict)
-
-    # NOTE:
-    # For the NS-mapping stage, the deciding density is measured in the
-    # virtual-deadline window [0, D_vir]. This matches the paper example
-    # where C_N=6, D_vir=5 => high-util branch and S_N=1.5.
-    uN_window = t.C_N / t.D_vir
-    if uN_window < 1.0:
-        return max(0.0, t.C_N / t.D)
+def _compute_SN_from_view(t: _TaskView) -> float:
+    """Internal helper: compute S_N from a validated task view."""
+    u_n = t.C_N / t.D_vir
+    if u_n <= 1.0:
+        return max(0.0, u_n)
 
     denom = t.D_vir - t.L_N
     if denom <= EPS:
@@ -151,16 +144,18 @@ def compute_SN(task: Any, strict: bool = True) -> float:
     return max(0.0, s_n)
 
 
-
-def compute_SO(task: Any, SN: float, strict: bool = True) -> float:
-    """Compute critical-state mapping speed S_O for a task.
-
-    LO tasks get S_O = 0. HI tasks follow SFMC Eq. (critical state mapping).
-    """
-    t = validate_task_params(task, strict=strict)
-
+def _compute_SO_from_view(t: _TaskView, SN: float) -> float:
+    """Internal helper: compute S_O from a validated task view."""
     if t.crit == "LO":
         return 0.0
+
+    crit_window = t.D - t.D_vir
+    if crit_window <= EPS:
+        raise MappingError("invalid critical-state window: D <= D_vir")
+
+    u_o = (t.C_O - SN * t.D_vir) / crit_window
+    if u_o <= 1.0:
+        return max(0.0, u_o)
 
     denom = t.D - t.D_vir - t.L_O
     if denom <= EPS:
@@ -170,14 +165,32 @@ def compute_SO(task: Any, SN: float, strict: bool = True) -> float:
     return max(0.0, s_o)
 
 
+
+def compute_SN(task: Any, strict: bool = True) -> float:
+    """Compute normal-state mapping speed S_N for a task."""
+    t = validate_task_params(task, strict=strict)
+    return _compute_SN_from_view(t)
+
+
+
+def compute_SO(task: Any, SN: float, strict: bool = True) -> float:
+    """Compute critical-state mapping speed S_O for a task.
+
+    LO tasks get S_O = 0. HI tasks follow SFMC Eq. (critical state mapping).
+    """
+    t = validate_task_params(task, strict=strict)
+    return _compute_SO_from_view(t, SN)
+
+
 def compute_task_speeds(task: Any, strict: bool = True) -> Dict[str, float]:
     """Compute and return SFMC speeds for one task.
 
     Returns:
         dict with keys: SN, SO
     """
-    sn = compute_SN(task, strict=strict)
-    so = compute_SO(task, sn, strict=strict)
+    t = validate_task_params(task, strict=strict)
+    sn = _compute_SN_from_view(t)
+    so = _compute_SO_from_view(t, sn)
     return {"SN": sn, "SO": so}
 
 
@@ -287,8 +300,8 @@ def map_task(task: Any, m: float, strict: bool = True) -> Dict[str, Any]:
     t = validate_task_params(task, strict=strict)
 
     # Step 1/2
-    s_n = compute_SN(task, strict=strict)
-    s_o = compute_SO(task, s_n, strict=strict)
+    s_n = _compute_SN_from_view(t)
+    s_o = _compute_SO_from_view(t, s_n)
 
     # Step 3: per-task capacity bounds (Eq.14 style).
     if s_n - m > EPS:
@@ -302,6 +315,7 @@ def map_task(task: Any, m: float, strict: bool = True) -> Dict[str, Any]:
 
     return {
         "task_id": int(getattr(task, "id", -1)),
+        "crit": t.crit,
         "S_N": s_n,
         "S_O": s_o,
         "normal_mccts": normal_mccts,
@@ -339,8 +353,7 @@ def map_taskset(taskset_or_tasks: Any, m: float, attach: bool = True, strict: bo
         mapped_tasks.append(mapped)
         total_sn += mapped["S_N"]
 
-        t = validate_task_params(task, strict=strict)
-        if t.crit == "HI":
+        if mapped["crit"] == "HI":
             total_so += mapped["S_O"]
 
         if attach:
